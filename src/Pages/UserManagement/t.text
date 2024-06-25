@@ -1,0 +1,56 @@
+<Box className='user_magement_page'>
+        {/* Header Section */}
+        <Box className='header_section'>
+          <Box className='header_back_section'>
+            <Button className='back_button' onClick={() => navigate(-1)}>
+              <MdKeyboardBackspace />
+            </Button>
+            <span className='header_title'>User list</span>
+          </Box>
+        </Box>
+
+        {/* Search Input section */}
+        <Box className='search_input_section'>
+          {/* Name */}
+          <InputComp
+            type='name'
+            placeholder={"Search user by name"}
+            className={"search_input"}
+            value={name}
+            handleChange={(e) => handleChangeName(e)}
+          />
+          {/* Email */}
+          <InputComp
+            type='email'
+            placeholder={"Search user by email"}
+            className={"search_input"}
+            value={email}
+            handleChange={(e) => handleChangeEmail(e)}
+          />
+          {/* Phone */}
+          <InputComp
+            type='name'
+            placeholder={"Search user by phone"}
+            className={"search_input"}
+            value={mobile}
+            handleChange={(e) => handleChangeMobile(e)}
+          />
+        </Box>
+
+        {/* User list section */}
+        {!name.trim() && !mobile.trim() && !email.trim() ? (
+          <UserListSection
+            users={users}
+            count={count}
+            limit={limit}
+            handleIncrementPage={handleIncrementPage}
+          />
+        ) : (
+          <SearchUserList 
+            users={users}
+            count={count}
+            limit={limit}
+            handleIncrementPage={handleIncrementPage} 
+          />
+        )}
+      </Box>
