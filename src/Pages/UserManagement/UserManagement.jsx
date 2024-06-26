@@ -110,6 +110,8 @@ const UserManagement = () => {
     setPage(1);
     setLimit(3);
     setUsers([]);
+    setMobile("");
+    setEmail("");
     setName(e.target.value);
   };
   /* Handle change email */
@@ -118,6 +120,8 @@ const UserManagement = () => {
     setLimit(3);
     setUsers([]);
     setEmail(e.target.value);
+    setMobile("");
+    setName("");
   };
   /* Handle change mobile */
   const handleChangeMobile = (e) => {
@@ -125,6 +129,8 @@ const UserManagement = () => {
     setLimit(3);
     setUsers([]);
     setMobile(e.target.value);
+    setEmail("");
+    setName("");
   };
 
   return (
@@ -160,7 +166,7 @@ const UserManagement = () => {
           />
           {/* Phone */}
           <InputComp
-            type='name'
+            type='number'
             placeholder={"Search user by phone"}
             className={"search_input"}
             value={mobile}

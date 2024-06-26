@@ -7,22 +7,14 @@ const CreateContext = createContext();
 
 function CreateContextProvider({ children }) {
   const [pageType, setPageType] = React.useState("home");
-
-//   useEffect(() => {
-//     setBgColor(localStorage.getItem("bgColor") || "light");
-//     setColor(localStorage.getItem("color") || "primary");
-//     setDisableColor(
-//       localStorage.getItem("color")
-//         ? `disable_${localStorage.getItem("color")}`
-//         : "disable_primary"
-//     );
-//   });
-
+  const [notifications, setNotifications] = useState([]);
   return (
     <CreateContext.Provider
       value={{
         pageType,
-        setPageType
+        setPageType,
+        notifications,
+        setNotifications
       }}>
       {children}
     </CreateContext.Provider>

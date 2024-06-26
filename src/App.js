@@ -13,11 +13,12 @@ import TournamentPage from "./Pages/TournamentManagement/TournamentPage.jsx";
 import TourDetails from "./Pages/TournamentDetailsPage/TourDetails";
 import Notification from "./Pages/Notification/Notification";
 import SupportPage from "./Pages/SupportPage/SupportPage";
+import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage";
 import { useSocket, socket } from "./socket/socket";
 
 
 function App() {
-  useSocket()
+  useSocket();
   
   return (
     <div className="app">
@@ -109,15 +110,13 @@ function App() {
         </Route>
 
         {/* Create Banner page */}
-        {/* <Route
-          path='/create-banner'
+        <Route
+          path='*'
           exact
           element={
-            <ProtectedRoute>
-              <CreateBanner />
-            </ProtectedRoute>
+            <NotFoundPage />
           }
-        /> */}
+        />
     </Routes>
     </div>
   );

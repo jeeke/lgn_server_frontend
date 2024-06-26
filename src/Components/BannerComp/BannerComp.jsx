@@ -39,7 +39,7 @@ const BannerComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(JSON.stringify(response.data));
+        console.log((response.data));
         toast({
           title: "Success.",
           description: `${response.data.message}`,
@@ -48,7 +48,7 @@ const BannerComp = ({ data, index }) => {
           isClosable: true,
         });
         if (response.data.status === 200) {
-          setStatus(data);
+          setStatus(value);
         }
       })
       .catch((error) => {

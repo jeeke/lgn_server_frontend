@@ -226,13 +226,13 @@
 .table_head {
   width: 100% !important;
   height: 9vh !important;
-  border: 1px solid rgba(240, 248, 255, 0.173) !important;
+  /* border: 1px solid rgba(240, 248, 255, 0.173) !important; */
   background-color: var(--primary-button-color) !important;
   font-weight: 500 !important;
   font-size: 0.95rem !important;
 }
 .table_header_item {
-  border: 1px solid rgba(255, 255, 255, 0.336);
+  /* border: 1px solid rgba(255, 255, 255, 0.336); */
   color: aliceblue !important;
 }
 .table_body {

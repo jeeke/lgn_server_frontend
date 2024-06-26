@@ -7,7 +7,7 @@ const notificationType = {
     6: "user's profile is inactive",
     7: "user's profile is inactive",
     8: "delete tournament",
-    9: "request for streaming account"
+    9: " new streaming request has been submitted by a user. Please review and process the request promptly."
 };
 
 export default notificationType;

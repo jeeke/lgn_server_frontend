@@ -31,6 +31,9 @@ import Avatar from "../../Assets/download.jpeg";
 import { IoMdClose } from "react-icons/io";
 import Loader from "../../Components/Loader/Loader";
 import TournamentsComp from "../../Components/TournamentsComp/TournamentsComp";
+import InputComp from "../../Components/InputComp/InputComp";
+import ListTournament from "./ListTournament";
+import SearchTournament from "./SearchTournament";
 
 const TournamentPage = () => {
   const navigate = useNavigate();
@@ -55,6 +58,8 @@ const TournamentPage = () => {
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState(10);
   const [loadPageBtn, setLoadPageBtn] = useState(false);
+  const [searchTitle, setSearchTitle] = useState("");
+  const [searchtournamentsList, setSearchTournamentsList] = useState([])
 
   const handleIncrementPage = () => {
     setLoadPageBtn(true);
@@ -126,32 +131,30 @@ const TournamentPage = () => {
   const handleCreateTournament = () => {
     setDisable(true);
     setLoading(true);
-    let data = JSON.stringify({
-      title: title,
-      created_by: "admin",
-      streaming_link: link,
-      tournament_by: tournament_by,
-      streaming_date: date,
-      streaming_time: time,
-      userId: userId,
-    });
+    const myHeaders = new Headers();
+    myHeaders.append("token", "");
+    myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+    const formdata = new FormData();
+    formdata.append("title", title);
+    formdata.append("created_by", "admin");
+    formdata.append("streaming_link", link);
+    formdata.append("tournament_by", tournament_by);
+    formdata.append("streaming_date", date);
+    formdata.append("streaming_time", time);
+    formdata.append("userId", userId);
+    formdata.append("TournamentImage", image);
 
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${process.env.REACT_APP_BASE_URL}api/tournament/create`,
-      headers: {
-        token: "",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      data: data,
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow"
     };
-
-    axios
-      .request(config)
-      .then((response) => {
-        setTournaments(response.data.tournament);
+    fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        setTournaments(prev => [result.tournament, ...prev]);
         setTime("");
         setDate("");
         setTitle("");
@@ -165,7 +168,6 @@ const TournamentPage = () => {
         setOpenCreateModal(false);
       })
       .catch((error) => {
-        console.log(error);
         setTime("");
         setDate("");
         setTitle("");
@@ -181,33 +183,66 @@ const TournamentPage = () => {
   };
 
   useEffect(() => {
-    if (page === 1) {
-      setMainLoader(true);
-    }
-    let config = {
-      method: "get",
-      maxBodyLength: Infinity,
-      url: `${process.env.REACT_APP_BASE_URL}api/tournament/?page=${page}&limit=${limit}`,
-      headers: {},
-    };
-
-    axios
-      .request(config)
+    if(searchTitle.trim() !== "") {
+      console.log("SEARCH API call")
+      if (page === 1) {
+        setMainLoader(true);
+      }
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: `${process.env.REACT_APP_BASE_URL}api/tournament/search_tournaments?name=${searchTitle}&page=${page}&limit=${limit}`,
+        headers: { }
+      };
+      
+      axios.request(config)
       .then((response) => {
-        console.log(response.data);
+        console.log((response.data));
         setCount(response.data.tournaments.length);
-        if (page === 1) {
-          setTournaments(response.data.tournaments);
-        } else {
-          setTournaments((prev) => [...prev, ...response.data.tournaments]);
-        }
-        setMainLoader(false);
-        setLoadPageBtn(false);
+          if (page === 1) {
+            setSearchTournamentsList(response.data.tournaments);
+          } else {
+            setSearchTournamentsList((prev) => [...prev, ...response.data.tournaments]);
+          }
+          setMainLoader(false);
+          setLoadPageBtn(false);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [page]);
+    } else  {
+      if (page === 1) {
+        setMainLoader(true);
+      }
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${process.env.REACT_APP_BASE_URL}api/tournament/?page=${page}&limit=${limit}`,
+        headers: {},
+      };
+  
+      axios
+        .request(config)
+        .then((response) => {
+          console.log(response.data);
+          setCount(response.data.tournaments.length);
+          if (page === 1) {
+            setTournaments(response.data.tournaments);
+          } else {
+            setTournaments((prev) => [...prev, ...response.data.tournaments]);
+          }
+          setMainLoader(false);
+          setLoadPageBtn(false);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [searchTitle, page]);
+
+  const handleChangeName = e => {
+    setSearchTitle(e.target.value)
+  }
 
   return (
     <Layout>
@@ -331,6 +366,14 @@ const TournamentPage = () => {
             </Button>
             <span className='header_title'>Tournament Management</span>
           </Box>
+          {/* Name */}
+          <InputComp
+            type='name'
+            placeholder={"Search tournament by title"}
+            className={"search_input"}
+            value={searchTitle}
+            handleChange={(e) => handleChangeName(e)}
+          />
           <Button
             className='create_banner_btn'
             onClick={() => setOpenCreateModal(true)}>
@@ -339,65 +382,26 @@ const TournamentPage = () => {
         </Box>
 
         <Box className='banner_section'>
-          <TableContainer>
-            <Table variant='simple'>
-              <Thead className='table_head'>
-                <Tr>
-                  <Th className='table_header_item'>SL NO</Th>
-                  <Th className='table_header_item'>Title</Th>
-                  <Th className='table_header_item'>Image</Th>
-                  <Th className='table_header_item'>Stream Date</Th>
-                  <Th className='table_header_item'>Stream Time</Th>
-                  <Th className='table_header_item'>Status</Th>
-                  <Th className='table_header_item'>Action</Th>
-                </Tr>
-              </Thead>
-              {mainLoader ? (
-                // Loader Section
-                <Tr className='empty_table_row'>
-                  <Td className='empty_table_row' colSpan='7'>
-                    <Box className='empty_table_list'>
-                      <Loader />
-                    </Box>
-                  </Td>
-                </Tr>
-              ) : (
-                <>
-                  {(tournaments || []).length > 0 ? (
-                    // Rendering components
-                    <>
-                      {tournaments.map((data, index) => (
-                        <Tbody key={data._id}>
-                          <TournamentsComp data={data} index={index} />
-                        </Tbody>
-                      ))}
-
-                      {count === limit && (
-                        <Tr className='empty_table_row'>
-                          <Td className='empty_table_row' colSpan='7'>
-                            <Box className='loadmore_table_list'>
-                              <Button
-                                className='load_more_btn'
-                                onClick={handleIncrementPage}>
-                                {loadPageBtn ? <Spinner /> : <>Load More</>}
-                              </Button>
-                            </Box>
-                          </Td>
-                        </Tr>
-                      )}
-                    </>
-                  ) : (
-                    // Empty list section
-                    <Tr className='empty_table_row'>
-                      <Td className='empty_table_row' colSpan='5'>
-                        <Box className='empty_table_list'>No data found</Box>
-                      </Td>
-                    </Tr>
-                  )}
-                </>
-              )}
-            </Table>
-          </TableContainer>
+          {
+            !searchTitle.trim() ? 
+          <ListTournament 
+            tournaments={tournaments} 
+            handleIncrementPage={handleIncrementPage}
+            count={count}
+            limit={limit}
+            mainLoader={mainLoader}
+            loadPageBtn={loadPageBtn}
+          />: 
+          <SearchTournament 
+            tournaments={searchtournamentsList} 
+            handleIncrementPage={handleIncrementPage}
+            count={count}
+            limit={limit}
+            mainLoader={mainLoader}
+            loadPageBtn={loadPageBtn}
+          />
+          }
+          
         </Box>
       </Box>
     </Layout>
