@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Box } from '@chakra-ui/react';
 import "./SideNavbar.css";
 import { GoHome } from "react-icons/go";
@@ -8,8 +8,19 @@ import { FaTrophy } from "react-icons/fa";
 import { FaBell } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { useNavigate, NavLink } from "react-router-dom";
+import {useSocket, socket} from "../../socket/socket"
 
-const SideNavbar = () => {
+const SideNavbar = () => {  
+  const [notificationsCount, setNotificationsCount] = useState(0)
+  useSocket();
+  
+  useEffect(() => {
+    socket.on("admin notification", (data) => {
+      console.log("Notification for admin")
+      // setNotificationsCount((prev) => prev + 1);
+    });
+  })
+  
   return (
     <Box className='sidnavbar_container'>
       {/* Home */}
@@ -70,6 +81,7 @@ const SideNavbar = () => {
             }>
             <FaBell className='navitem_icon' />
             <Box className='navitem_name'>Notification Management</Box>
+            <Box className='navitem_name'>{notificationsCount> 0 && notificationsCount}</Box>
       </NavLink>
 
       {/* Notificatin management */}

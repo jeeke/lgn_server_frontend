@@ -225,8 +225,7 @@ function BannerManagement() {
             <Button className='back_button' onClick={() => navigate(-1)}>
               <MdKeyboardBackspace />
             </Button>
-            <span className='header_title'>Create Banner</span> :
-            <span className='header_title'>Banner</span>
+            <span className='header_title'>Create Banner</span>
           </Box>
           <Button
             className='create_banner_btn'

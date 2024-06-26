@@ -23,14 +23,15 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import NotificationComp from "../../Components/NotificationComp/NotificationComp";
 import Loader from "../../Components/Loader/Loader";
 import axios from "axios";
+import {GlobalContext} from "../../Context/Context"
 
 
 const Notification = () => {
+  const {notifications, setNotifications} = GlobalContext();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [paginationLoading, setPaginationLoading] = useState(false);
-  const [notifications, setNotifications] = useState([]);
   const [count, setCount] = useState(10);
   const navigate = useNavigate();
 
@@ -41,13 +42,13 @@ const Notification = () => {
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: `${process.env.REACT_APP_BASE_URL}api/profile/admin-notification`,
+      url: `${process.env.REACT_APP_BASE_URL}api/profile/admin-notification?page=${page}&limit=${limit}`,
       headers: { }
     };
     
     axios.request(config)
     .then((response) => {
-      console.log(response.data.notifictions)
+      setCount(response.data.notifictions.length)
       if(page === 1) {
         setNotifications(response.data.notifictions)
       } else {

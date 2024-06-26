@@ -157,7 +157,6 @@ const TournamentsComp = ({ data, index }) => {
           <Td className='td'>{data.streaming_date}</Td>
           <Td className='td'>{data.streaming_time}</Td>
           <Td className='td'>
-            <Td className='td'>
               <Menu>
                 <MenuButton
                   as={Button}
@@ -186,7 +185,6 @@ const TournamentsComp = ({ data, index }) => {
                 </MenuList>
               </Menu>
             </Td>
-          </Td>
           <Td className='td'>
             <Button
               className='table_delete_btn'
