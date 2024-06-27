@@ -13,8 +13,6 @@ import notificationType from "../../Config/notification"
 
 
 const NotificationComp = ({data, index}) => {
-  console.log(data)
-  console.log("notificationType")
   return (
     <>
         <Tr>

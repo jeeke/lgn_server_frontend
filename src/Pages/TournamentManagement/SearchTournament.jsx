@@ -18,7 +18,7 @@ import {
 import TournamentsComp from "../../Components/TournamentsComp/TournamentsComp";
 import Loader from "../../Components/Loader/Loader";
 
-const SearchTournament = ({tournaments, handleIncrementPage, count, limit, mainLoader, loadPageBtn}) => {
+const SearchTournament = ({tournaments, handleIncrementPage, count, limit, mainLoader, loadPageBtn, setUpdateTournament}) => {
   return (
     <>
     <TableContainer>
@@ -50,7 +50,7 @@ const SearchTournament = ({tournaments, handleIncrementPage, count, limit, mainL
                     <>
                       {tournaments.map((data, index) => (
                         <Tbody key={data._id}>
-                          <TournamentsComp data={data} index={index} />
+                          <TournamentsComp data={data} index={index} setUpdateTournament={setUpdateTournament} />
                         </Tbody>
                       ))}
 

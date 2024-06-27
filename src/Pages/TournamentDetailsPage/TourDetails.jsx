@@ -48,7 +48,7 @@ const TourDetails = () => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data)
+        // console.log(response.data)
         setturnamentDetails(response.data.result);
         setLoading(false);
         socket.emit("join room", response.data.result);

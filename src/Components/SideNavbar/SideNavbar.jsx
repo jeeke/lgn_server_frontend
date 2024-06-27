@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, useToast } from '@chakra-ui/react';
 import "./SideNavbar.css";
 import { GoHome } from "react-icons/go";
 import { PiFlagBannerFill } from "react-icons/pi";
@@ -8,18 +8,39 @@ import { FaTrophy } from "react-icons/fa";
 import { FaBell } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { useNavigate, NavLink } from "react-router-dom";
-import {useSocket, socket} from "../../socket/socket"
+import {useSocket, socket} from "../../socket/socket";
+import {GlobalContext} from "../../Context/Context";
 
 const SideNavbar = () => {  
-  const [notificationsCount, setNotificationsCount] = useState(0)
+  const toast = useToast()
+  const {notificationsCount, setNotificationsCount} = GlobalContext();
   useSocket();
   
+  // useEffect(() => {
+  //   socket.on("GET admin notification", data => {
+  //     // console.log("GET admin notification", data);
+  //     setNotificationsCount(prev => prev + 1)
+  //   });
+  // })
+
   useEffect(() => {
-    socket.on("admin notification", (data) => {
-      console.log("Notification for admin")
-      // setNotificationsCount((prev) => prev + 1);
-    });
-  })
+    const handleNotification = data => {
+      setNotificationsCount(prev => prev + 1);
+      toast({
+        title: `A new notification received`,
+        variant: 'left-accent',
+        isClosable: true,
+        position: "top-right"
+      })
+    };
+
+    socket.on("GET admin notification", handleNotification);
+
+    // Cleanup function to avoid adding multiple listeners
+    return () => {
+      socket.off("GET admin notification", handleNotification);
+    };
+  }, []); 
   
   return (
     <Box className='sidnavbar_container'>

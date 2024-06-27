@@ -75,7 +75,7 @@ const QuestionForm = ({ id }) => {
     fetch(`${process.env.REACT_APP_BASE_URL}api/v1/questions/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         if (result.status === 201) {
           toast({
             title: "Account created.",

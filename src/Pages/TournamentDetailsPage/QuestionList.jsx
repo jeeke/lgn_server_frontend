@@ -46,7 +46,7 @@ const QuestionList = ({ id }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setCount(response.data.questions.length);
         if (page === 1) {
           setQuestions(response.data.questions);

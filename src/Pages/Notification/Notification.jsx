@@ -48,6 +48,7 @@ const Notification = () => {
     
     axios.request(config)
     .then((response) => {
+      console.log(response.data)
       setCount(response.data.notifictions.length)
       if(page === 1) {
         setNotifications(response.data.notifictions)

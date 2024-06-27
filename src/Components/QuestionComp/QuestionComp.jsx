@@ -61,7 +61,7 @@ const QuestionComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setStatus(response.data.question.status);
         setOpenstatusModal(false);
         toast({
@@ -97,7 +97,7 @@ const QuestionComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setcorrectOption(response.data.question.correctOption);
         toast({
           title: "Success.",
@@ -131,7 +131,7 @@ const QuestionComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setIsDelete(response.data.question.isDelete);
         setOpenDeleteModal(false);
         toast({

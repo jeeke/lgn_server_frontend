@@ -91,7 +91,7 @@ function BannerManagement() {
     fetch(`${process.env.REACT_APP_BASE_URL}api/v1/banners`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
+        //console.log(result);
         if (result.status === 201) {
           setName("");
           setLink("");
@@ -135,7 +135,7 @@ function BannerManagement() {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setCount(response.data.data.length);
         if (page === 1) {
           setBanners(response.data.data);

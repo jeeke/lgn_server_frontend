@@ -59,7 +59,8 @@ const TournamentPage = () => {
   const [count, setCount] = useState(10);
   const [loadPageBtn, setLoadPageBtn] = useState(false);
   const [searchTitle, setSearchTitle] = useState("");
-  const [searchtournamentsList, setSearchTournamentsList] = useState([])
+  const [searchtournamentsList, setSearchTournamentsList] = useState([]);
+  const [updateTournament, setUpdateTournament] = useState(null)
 
   const handleIncrementPage = () => {
     setLoadPageBtn(true);
@@ -153,7 +154,7 @@ const TournamentPage = () => {
     fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         setTournaments(prev => [result.tournament, ...prev]);
         setTime("");
         setDate("");
@@ -184,7 +185,7 @@ const TournamentPage = () => {
 
   useEffect(() => {
     if(searchTitle.trim() !== "") {
-      console.log("SEARCH API call")
+      // console.log("SEARCH API call")
       if (page === 1) {
         setMainLoader(true);
       }
@@ -197,7 +198,7 @@ const TournamentPage = () => {
       
       axios.request(config)
       .then((response) => {
-        console.log((response.data));
+        // console.log((response.data));
         setCount(response.data.tournaments.length);
           if (page === 1) {
             setSearchTournamentsList(response.data.tournaments);
@@ -224,7 +225,7 @@ const TournamentPage = () => {
       axios
         .request(config)
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           setCount(response.data.tournaments.length);
           if (page === 1) {
             setTournaments(response.data.tournaments);
@@ -238,7 +239,7 @@ const TournamentPage = () => {
           console.log(error);
         });
     }
-  }, [searchTitle, page]);
+  }, [searchTitle, page, setUpdateTournament]);
 
   const handleChangeName = e => {
     setSearchTitle(e.target.value)
@@ -252,7 +253,7 @@ const TournamentPage = () => {
         onClose={handleCloseCreateBannerModal}
         title={<Box className='banner_create_title'>Create new banner</Box>}
         body={
-          <Box className='create_tour_body '>
+          <Box className='create_tour_body'>
             {/* Title */}
             <Inputcomp
               type='text'
@@ -328,6 +329,7 @@ const TournamentPage = () => {
                 <Box className='user_list_section'>
                   {users.map((data) => (
                     <Box
+                      key={data._id}
                       className='user_card'
                       data={data._id}
                       onClick={() => handleAddUser(data)}>
@@ -391,6 +393,7 @@ const TournamentPage = () => {
             limit={limit}
             mainLoader={mainLoader}
             loadPageBtn={loadPageBtn}
+            setUpdateTournament={setUpdateTournament}
           />: 
           <SearchTournament 
             tournaments={searchtournamentsList} 
@@ -399,6 +402,7 @@ const TournamentPage = () => {
             limit={limit}
             mainLoader={mainLoader}
             loadPageBtn={loadPageBtn}
+            setUpdateTournament={setUpdateTournament}
           />
           }
           

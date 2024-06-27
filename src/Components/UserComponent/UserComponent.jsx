@@ -65,7 +65,7 @@ const UserComponent = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setOpenActiveModal(false);
         setActive(statusValue);
         toast({
@@ -112,7 +112,7 @@ const UserComponent = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setOpenDeleteModal(false);
         setIsDelete(response.data.user.isDelete);
         toast({
@@ -153,7 +153,7 @@ const UserComponent = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setOpenAccountType(false);
         setAccountType(response.data.user.accountType);
         toast({
