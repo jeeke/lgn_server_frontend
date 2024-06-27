@@ -55,7 +55,7 @@ const Login = () => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        //console.log(response.data);
         if (response.data.status === 200) {
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("user", JSON.stringify(response.data.admin));
@@ -110,9 +110,9 @@ const Login = () => {
           />
         </Box>
 
-        <Box className='redirection_link' onClick={() => navigate("/register")}>
+        {/* <Box className='redirection_link' onClick={() => navigate("/register")}>
           Don't have an account?
-        </Box>
+        </Box> */}
 
         <AuthButton
           disable={disable}

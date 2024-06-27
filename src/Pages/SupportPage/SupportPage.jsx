@@ -40,7 +40,7 @@ const SupportPage = () => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        //console.log(response.data);
         setLists(response.data.data);
         setLoading(false);
       })

@@ -8,13 +8,16 @@ const CreateContext = createContext();
 function CreateContextProvider({ children }) {
   const [pageType, setPageType] = React.useState("home");
   const [notifications, setNotifications] = useState([]);
+  const [notificationsCount, setNotificationsCount] = useState(0)
   return (
     <CreateContext.Provider
       value={{
         pageType,
         setPageType,
         notifications,
-        setNotifications
+        setNotifications,
+        notificationsCount,
+        setNotificationsCount
       }}>
       {children}
     </CreateContext.Provider>

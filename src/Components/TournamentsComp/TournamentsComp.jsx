@@ -11,7 +11,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  useToast,
+  useToast,Input
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { FaRegEdit, FaRegEye } from "react-icons/fa";
@@ -20,8 +20,14 @@ import AlertModal from "../modalComp/AlertModal";
 import TourImage from "../../Assets/image.png";
 import { useNavigate } from "react-router-dom";
 import { useSocket, socket } from "../../socket/socket";
+import { FaEdit } from "react-icons/fa";
+import FullModal from "../modalComp/FullModal";
+import ButtonComp from "../ButtonComp/AuthButton"
+import InputComp from "../InputComp/InputComp";
+import {MdClose} from "react-icons/md";
+import {FiUpload} from "react-icons/fi"
 
-const TournamentsComp = ({ data, index }) => {
+const TournamentsComp = ({ data, index, setUpdateTournament }) => {
   const toast = useToast();
   const navigate = useNavigate();
   useSocket();
@@ -31,6 +37,16 @@ const TournamentsComp = ({ data, index }) => {
   const [handleOpenStatusModal, setHandleOpenStatusModal] = useState(false);
   const [status, setStatus] = useState(data.is_active);
   const [statusValue, setStatusValue] = useState("");
+  const [openEditModal, setOpenEditModal] = useState(false);
+
+  // states
+  const [title, setTitle] = useState("");
+  const [link, setLink] = useState('');
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [image, setImage] = useState("");
+  const [prevImage, setPrevImage] = useState("");
+  const [streamImg, setStreamImage] = useState("")
 
   const handleOpenDeleteModal = (id) => {
     setOpenDeleteModal(true);
@@ -48,7 +64,7 @@ const TournamentsComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setOpenDeleteModal(false);
         setIsDelete(response.data.tournment.is_deleted);
         toast({
@@ -112,6 +128,55 @@ const TournamentsComp = ({ data, index }) => {
       });
   };
 
+  const handleEditModal = (data) => {
+    setOpenEditModal(true);
+    setTournamentId(data._id);
+    setTitle(data.title);
+    setLink(data.streaming_link);
+    setDate(data.streaming_date);
+    setTime(data.streaming_time);
+    setStreamImage(data.image)
+  }
+
+  const handleCloseImage = () => {
+    setStreamImage("")
+  }
+
+  const handleEditTournament = () => {
+    const myHeaders = new Headers();
+    myHeaders.append("x-access-token", localStorage.getItem("token"));
+    const formdata = new FormData();
+    formdata.append("streaming_link", link);
+    formdata.append("title", title);
+    formdata.append("streaming_date", date);
+    formdata.append("streaming_time", time);
+    formdata.append("image", image || streamImg);
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow"
+    };
+    fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/edit-tournament/${tournamentId}`, requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      console.log(result);
+      setTournamentId('');
+      setTitle('');
+      setLink('');
+      setDate('');
+      setTime('');
+      setStreamImage('');
+      setOpenEditModal(false);
+    })
+    .catch((error) => console.error(error));
+  }
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+    setPrevImage(URL.createObjectURL(e.target.files[0]));
+  };
+
   return (
     <>
       {handleOpenStatusModal && (
@@ -146,6 +211,88 @@ const TournamentsComp = ({ data, index }) => {
           }
         />
       )}
+
+      {
+        openEditModal && 
+        <FullModal 
+          isOpen={openEditModal} 
+          onClose={() => setOpenEditModal(false)} 
+          title="Edit tournament details"
+          body={<Box className='create_tour_body'>
+            <InputComp 
+              type="text"
+              placeholder="Enter tournament title"
+              className='banner_input'
+              value={title}
+              handleChange={e => setTitle(e.target.value)}
+            />
+            <InputComp 
+              type="text"
+              placeholder="Enter tournament link"
+              className='banner_input'
+              value={link}
+              handleChange={e => setLink(e.target.value)}
+            />
+            <InputComp
+              type='date'
+              placeholder='provide Streaming date'
+              className='banner_input'
+              value={date}
+              handleChange={(e) => setDate(e.target.value)}
+            />
+            <InputComp
+              type='time'
+              placeholder='provide Streaming time'
+              className='banner_input'
+              value={time}
+              handleChange={(e) => setTime(e.target.value)}
+            />
+            {streamImg ? (
+              <Box className='banner_image_preview_setion'>
+                <Img src={streamImg} className='preview_image' />
+                <Button className='close_prev_btn' onClick={handleCloseImage}>
+                  <MdClose />
+                </Button>
+              </Box>
+            ) : (
+              <>
+              {image ? (
+              <Box className='banner_image_preview_setion'>
+                <Img src={prevImage} className='preview_image' />
+                <Button className='close_prev_btn' onClick={handleCloseImage}>
+                  <MdClose />
+                </Button>
+              </Box>
+            ) : (
+              <Box className='banner_image_section'>
+                <label htmlFor='banner_image'>
+                  <FiUpload className='banner_file_icon' />
+                </label>
+                <Input
+                  type='file'
+                  id='banner_image'
+                  className='file_input'
+                  onChange={(e) => handleImageChange(e)}
+                />
+              </Box>
+            )}
+              </>
+            )}
+          </Box>}
+          footer={
+            <Box className='create_banner_footer'>
+              <ButtonComp
+                loading={false}
+                disable={false}
+                className='banner_create_btn'
+                disableClassName='disable_banner_create_btn'
+                text='Save'
+                handleClick={handleEditTournament}
+              />
+            </Box>
+          }
+        />
+      }
 
       {!isDelete && (
         <Tr>
@@ -196,6 +343,12 @@ const TournamentsComp = ({ data, index }) => {
               className='table_edit_btn'
               onClick={() => navigate(`/tournament-details/${data._id}`)}>
               <FaRegEye />
+            </Button>
+
+            <Button
+              className='table_edit_btn'
+              onClick={() => handleEditModal(data)}>
+              <FaEdit />
             </Button>
           </Td>
         </Tr>

@@ -39,7 +39,7 @@ const BannerComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log((response.data));
+        // console.log((response.data));
         toast({
           title: "Success.",
           description: `${response.data.message}`,
@@ -69,7 +69,7 @@ const BannerComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         toast({
           title: "Success.",
           description: `${response.data.message}`,
@@ -129,7 +129,7 @@ const BannerComp = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         toast({
           title: "Success.",
           description: `${response.data.message}`,
