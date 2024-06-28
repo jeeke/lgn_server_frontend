@@ -18,6 +18,7 @@ import {
   Td,
   Spinner,
 } from "@chakra-ui/react";
+import LeaderboardComp from "../../Components/LeaderboardComp/LeaderboardComp";
 
 const Leaderboard = ({ id }) => {
   const [lists, setLists] = useState([]);
@@ -28,14 +29,15 @@ const Leaderboard = ({ id }) => {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${process.env.REACT_APP_BASE_URL}api/tournament/get-leaderboard-by-tournament/6667e9c9052fbfc9c1b043cb`,
+      url: `${process.env.REACT_APP_BASE_URL}api/tournament/get-leaderboard-by-tournament/${id}`,
       headers: {},
     };
 
     axios
       .request(config)
       .then((response) => {
-        // console.log(JSON.stringify(response.data));
+        console.log(response.data)
+        setLists(response.data.leaderboard)
         setLoading(false);
       })
       .catch((error) => {
@@ -67,12 +69,12 @@ const Leaderboard = ({ id }) => {
               {(lists || []).length > 0 ? (
                 // Rendering components
                 <>
-                  {/* {questions.map((data, index) => (
+                   {lists.map((data, index) => (
                     <Tbody key={data._id}>
-                      <QuestionComp data={data} index={index + 1} />
+                      <LeaderboardComp key={data._id} data={data} index={index + 1} />
                     </Tbody>
                   ))}
-                  {count === limit && (
+                  {/*{count === limit && (
                     <Tr className='empty_table_row'>
                       <Td className='empty_table_row' colSpan='13'>
                         <Box className='loadmore_table_list'>
@@ -85,7 +87,6 @@ const Leaderboard = ({ id }) => {
                       </Td>
                     </Tr>
                   )} */}
-                  RENDER
                 </>
               ) : (
                 // Empty list section
