@@ -157,7 +157,7 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
       body: formdata,
       redirect: "follow"
     };
-    fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/edit-tournament/${tournamentId}`, requestOptions)
+    fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/edit-tournament/${tournamentId}`, requestOptions) // 
     .then((response) => response.json())
     .then((result) => {
       console.log(result);

@@ -40,6 +40,7 @@ const TournamentPage = () => {
   const location = useLocation();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("")
   const [link, setLink] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -137,6 +138,7 @@ const TournamentPage = () => {
     myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
     const formdata = new FormData();
     formdata.append("title", title);
+    formdata.append("description", description);
     formdata.append("created_by", "admin");
     formdata.append("streaming_link", link);
     formdata.append("tournament_by", tournament_by);
@@ -261,6 +263,14 @@ const TournamentPage = () => {
               className='banner_input'
               value={title}
               handleChange={(e) => setTitle(e.target.value)}
+            />
+            {/* Title */}
+            <Inputcomp
+              type='text'
+              placeholder='Stream description'
+              className='banner_input'
+              value={description}
+              handleChange={(e) => setDescription(e.target.value)}
             />
             {/* Link */}
             <Inputcomp
