@@ -92,6 +92,7 @@ const QuestionForm = ({ id }) => {
           setOpt3Img("");
           setOpt4("");
           setOpt4Img("");
+          setQuestion("");
           setLoading(false);
         }
       })
