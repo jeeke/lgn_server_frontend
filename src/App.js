@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./App.css"
 import { Box, Button } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
@@ -16,9 +16,33 @@ import SupportPage from "./Pages/SupportPage/SupportPage";
 import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage";
 import { useSocket, socket } from "./socket/socket";
 
+import Pusher from 'pusher-js';
+
 
 function App() {
-  useSocket();
+  // useSocket();
+
+  useEffect(() => {
+    // Initialize Pusher
+    const pusher = new Pusher("0b6fa1d63930682ca120", {
+      cluster: "ap2",
+    });
+
+    // Subscribe to the channel
+    const channel = pusher.subscribe('user-channel');
+
+    // Bind to an event
+    channel.bind('admin-notification', (data) => {
+      // setNotifications((prevNotifications) => [...prevNotifications, data]);
+      console.log(data)
+    });
+
+    // Cleanup function to unsubscribe from the channel
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, []);
   
   return (
     <div className="app">
