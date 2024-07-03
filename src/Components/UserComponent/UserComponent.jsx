@@ -29,6 +29,7 @@ const UserComponent = ({ data, index }) => {
   const toast = useToast();
   const [active, setActive] = useState(data.status || "active");
   const [accountType, setAccountType] = useState(data.accountType || "user");
+  const [selectAccountType, setSelectAccountType] = useState("")
   const [isDelete, setIsDelete] = useState(data.isDelete || false);
   const [openActiveModal, setOpenActiveModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -88,7 +89,8 @@ const UserComponent = ({ data, index }) => {
   /* Handle accept streaming request */
   const handleAcceoptAccountType = (value, id) => {
     setOpenAccountType(true);
-    setAccountType(value);
+    // setAccountType(value);
+    setSelectAccountType(value)
     setProfileId(id);
   };
 
@@ -135,7 +137,7 @@ const UserComponent = ({ data, index }) => {
   /* HAndle update user's account type */
   const handleUpdateAccountType = () => {
     let data = JSON.stringify({
-      accountType: accountType,
+      accountType: selectAccountType,
       message: message,
     });
 
@@ -153,7 +155,7 @@ const UserComponent = ({ data, index }) => {
     axios
       .request(config)
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data);
         setOpenAccountType(false);
         setAccountType(response.data.user.accountType);
         toast({

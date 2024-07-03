@@ -40,13 +40,20 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
   const [openEditModal, setOpenEditModal] = useState(false);
 
   // states
-  const [title, setTitle] = useState("");
-  const [link, setLink] = useState('');
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [image, setImage] = useState("");
+  const [title, setTitle] = useState(data.title);
+  const [link, setLink] = useState(data.streaming_link);
+  const [date, setDate] = useState(data.streaming_date);
+  const [time, setTime] = useState(data.streaming_time);
+  const [image, setImage] = useState(data.image);
   const [prevImage, setPrevImage] = useState("");
-  const [streamImg, setStreamImage] = useState("")
+  const [streamImg, setStreamImage] = useState("");
+
+  const [selectTitle, setSelectTitle] = useState('');
+  const [selectLink, setSelectLink] = useState('');
+  const [selectDate, setSelectDate] = useState('');
+  const [selectTime, setSelectTime] = useState("");
+
+  
 
   const handleOpenDeleteModal = (id) => {
     setOpenDeleteModal(true);
@@ -129,12 +136,13 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
   };
 
   const handleEditModal = (data) => {
+    console.log(data)
     setOpenEditModal(true);
     setTournamentId(data._id);
-    setTitle(data.title);
-    setLink(data.streaming_link);
-    setDate(data.streaming_date);
-    setTime(data.streaming_time);
+    setSelectTitle(data.title);
+    setSelectLink(data.streaming_link);
+    setSelectDate(data.streaming_date);
+    setSelectTime(data.streaming_time);
     setStreamImage(data.image)
   }
 
@@ -146,10 +154,10 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
     const myHeaders = new Headers();
     myHeaders.append("x-access-token", localStorage.getItem("token"));
     const formdata = new FormData();
-    formdata.append("streaming_link", link);
-    formdata.append("title", title);
-    formdata.append("streaming_date", date);
-    formdata.append("streaming_time", time);
+    formdata.append("streaming_link", selectLink);
+    formdata.append("title", selectTitle);
+    formdata.append("streaming_date", selectDate);
+    formdata.append("streaming_time", selectTime);
     formdata.append("image", image || streamImg);
     const requestOptions = {
       method: "PUT",
@@ -161,12 +169,15 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
     .then((response) => response.json())
     .then((result) => {
       console.log(result);
+      setTitle(result.data.title);
+      setSelectTitle('');
+      setDate(result.data.streaming_date);
+      setSelectDate('');
+      setLink(result.data.streaming_link);
+      setSelectLink("")
       setTournamentId('');
-      setTitle('');
-      setLink('');
-      setDate('');
-      setTime('');
-      setStreamImage('');
+      setTime(result.data.streaming_time)
+      setSelectTime(result.data.image)
       setOpenEditModal(false);
     })
     .catch((error) => console.error(error));
@@ -223,29 +234,29 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
               type="text"
               placeholder="Enter tournament title"
               className='banner_input'
-              value={title}
-              handleChange={e => setTitle(e.target.value)}
+              value={selectTitle}
+              handleChange={e => setSelectTitle(e.target.value)}
             />
             <InputComp 
               type="text"
               placeholder="Enter tournament link"
               className='banner_input'
-              value={link}
-              handleChange={e => setLink(e.target.value)}
+              value={selectLink}
+              handleChange={e => setSelectLink(e.target.value)}
             />
             <InputComp
               type='date'
               placeholder='provide Streaming date'
               className='banner_input'
-              value={date}
-              handleChange={(e) => setDate(e.target.value)}
+              value={selectDate}
+              handleChange={(e) => setSelectDate(e.target.value)}
             />
             <InputComp
               type='time'
               placeholder='provide Streaming time'
               className='banner_input'
-              value={time}
-              handleChange={(e) => setTime(e.target.value)}
+              value={selectTime}
+              handleChange={(e) => setSelectTime(e.target.value)}
             />
             {streamImg ? (
               <Box className='banner_image_preview_setion'>
@@ -297,12 +308,12 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
       {!isDelete && (
         <Tr>
           <Td className='td'>{index + 1}</Td>
-          <Td className='td'>{data.title}</Td>
+          <Td className='td'>{title}</Td>
           <Td className='td'>
-            <Img src={data.image || TourImage} className='table_image' />
+            <Img src={image || TourImage} className='table_image' />
           </Td>
-          <Td className='td'>{data.streaming_date}</Td>
-          <Td className='td'>{data.streaming_time}</Td>
+          <Td className='td'>{date}</Td>
+          <Td className='td'>{time}</Td>
           <Td className='td'>
               <Menu>
                 <MenuButton
