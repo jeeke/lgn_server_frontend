@@ -17,11 +17,11 @@ const NotificationComp = ({data, index}) => {
     <>
         <Tr>
             <Td className='td'>{index + 1}</Td>
-            <Td className='td'>{data.user.name}</Td>
-            <Td className='td notification_decription'>{notificationType[data.type]}</Td>
+            <Td className='td'>{data.user ? data.user.name : ""}</Td>
+            <Td className='td notification_decription'>{notificationType[data.type] || ""}</Td>
         </Tr>
     </>
   )
 }
 
-export default NotificationComp
+export default NotificationComp;

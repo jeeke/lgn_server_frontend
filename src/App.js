@@ -17,15 +17,17 @@ import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage";
 import { useSocket, socket } from "./socket/socket";
 
 import Pusher from 'pusher-js';
+import { GlobalContext } from "./Context/Context";
 
 
 function App() {
+  const {setNotifications, setNotificationsCount} = GlobalContext()
   // useSocket();
 
   useEffect(() => {
     // Initialize Pusher
-    const pusher = new Pusher("0b6fa1d63930682ca120", {
-      cluster: "ap2",
+    const pusher = new Pusher(process.env.REACT_APP_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
     });
 
     // Subscribe to the channel
@@ -34,7 +36,11 @@ function App() {
     // Bind to an event
     channel.bind('admin-notification', (data) => {
       // setNotifications((prevNotifications) => [...prevNotifications, data]);
-      console.log(data)
+      console.log(data);
+      if(data.fromAdmin === false) {
+        setNotifications((prevNotifications) => [data, ...prevNotifications]);
+        setNotificationsCount(prev => prev + 1)
+      }
     });
 
     // Cleanup function to unsubscribe from the channel
