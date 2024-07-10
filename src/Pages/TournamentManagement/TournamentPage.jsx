@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import Layout from "../../Layout/Layout";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MdKeyboardBackspace } from "react-icons/md";
@@ -34,8 +34,10 @@ import TournamentsComp from "../../Components/TournamentsComp/TournamentsComp";
 import InputComp from "../../Components/InputComp/InputComp";
 import ListTournament from "./ListTournament";
 import SearchTournament from "./SearchTournament";
+import { GlobalContext } from "../../Context/Context";
 
 const TournamentPage = () => {
+  const {setPageType} = GlobalContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -61,7 +63,11 @@ const TournamentPage = () => {
   const [loadPageBtn, setLoadPageBtn] = useState(false);
   const [searchTitle, setSearchTitle] = useState("");
   const [searchtournamentsList, setSearchTournamentsList] = useState([]);
-  const [updateTournament, setUpdateTournament] = useState(null)
+  const [updateTournament, setUpdateTournament] = useState(null);
+
+  useLayoutEffect(() => {
+    setPageType("Tournament")
+  })
 
   const handleIncrementPage = () => {
     setLoadPageBtn(true);

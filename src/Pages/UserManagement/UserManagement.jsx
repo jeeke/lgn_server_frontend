@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import Layout from "../../Layout/Layout";
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardBackspace } from "react-icons/md";
@@ -21,8 +21,10 @@ import InputComp from "../../Components/InputComp/InputComp";
 import axios from "axios";
 import UserListSection from "./UserListSection";
 import SearchUserList from "./SearchUserList";
+import { GlobalContext } from "../../Context/Context";
 
 const UserManagement = () => {
+  const {setPageType} = GlobalContext();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,6 +35,10 @@ const UserManagement = () => {
   const [limit, setLimit] = useState(3);
   const [count, setCount] = useState(3);
   const [loadPageBtn, setLoadPageBtn] = useState(false);
+
+  useLayoutEffect(() => {
+    setPageType("Tournament")
+  })
 
   useEffect(() => {
     if (name.trim() !== "" || email.trim() !== "" || mobile.trim() !== "") {

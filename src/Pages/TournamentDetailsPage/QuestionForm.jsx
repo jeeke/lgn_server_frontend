@@ -1,10 +1,14 @@
 /** @format */
 
 import React, { useEffect, useState } from "react";
-import { Box, Textarea, useToast, Input } from "@chakra-ui/react";
+import { Box, Textarea, useToast, Input, Button, Switch, FormControl, FormLabel } from "@chakra-ui/react";
 import InputComp from "../../Components/InputComp/InputComp";
 import ButtonComp from "../../Components/ButtonComp/AuthButton";
 import axios from "axios";
+import AlertModal from "../../Components/modalComp/AlertModal";
+import { update } from "react-spring";
+import { FiPlus } from "react-icons/fi";
+import { FaMinus } from "react-icons/fa6";
 
 const QuestionForm = ({ id }) => {
   const toast = useToast();
@@ -19,20 +23,21 @@ const QuestionForm = ({ id }) => {
   const [opt4Img, setOpt4Img] = useState("");
   const [disable, setdisable] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [updateTimeModal, setUpdateTimeModal] = useState(false);
+  const [selectTime, setSelectTime] = useState();
+  const [counter, setCounter] = useState(3);
+  const [isInfiniteTime, setIsInfiniteTime] = useState(false);
 
   useEffect(() => {
     if (
       !question.trim() ||
       !opt1.trim() ||
-      !opt2.trim() ||
-      !opt3.trim() ||
-      !opt4.trim()
-    ) {
+      !opt2.trim()) {
       setdisable(true);
     } else {
       setdisable(false);
     }
-  }, [question, opt1, opt2, opt3, opt4]);
+  }, [question, opt1, opt2]);
 
   const handleImageChange1 = (e) => {
     setOpt1Img(e.target.files[0]);
@@ -75,8 +80,17 @@ const QuestionForm = ({ id }) => {
     fetch(`${process.env.REACT_APP_BASE_URL}api/v1/questions/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        // console.log(result);
+        console.log(result);
         if (result.status === 201) {
+          const now = new Date();
+          const expirationDate = new Date(result.question.validUntil);
+          const distance = expirationDate.getTime() - now.getTime();
+
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          console.log("M:", minutes);
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          console.log("S:", seconds);
+          setSelectTime(minutes)
           toast({
             title: "Account created.",
             description: "Question has been created",
@@ -84,6 +98,7 @@ const QuestionForm = ({ id }) => {
             duration: 9000,
             isClosable: true,
           });
+          setQuestion("")
           setOpt1("");
           setOpt1Img("");
           setOpt2("");
@@ -94,13 +109,65 @@ const QuestionForm = ({ id }) => {
           setOpt4Img("");
           setQuestion("");
           setLoading(false);
+          setUpdateTimeModal(true)
         }
       })
       .catch((error) => console.error(error));
   };
 
+  const handleDecrement = () => {
+    if(counter > 1) {
+      setCounter(prev => prev - 1)
+    } else {
+      toast({
+        title: "Warning",
+        description: "Timer value cannot be Zero or negative",
+        status: "warning",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleChange = (event) => {
+    setIsInfiniteTime(event.target.checked);
+    // You can add additional logic here, e.g., updating the form data or making an API call
+  };
+
+  const handleUpdatequestionTime = () => {}
+
   return (
     <Box className='question_form_section'>
+      {
+        updateTimeModal &&
+        <AlertModal 
+          isOpen={updateTimeModal}
+          onClose={() => setUpdateTimeModal(false)}
+          title={"Update question validity time"}
+          body={
+            <Box className="question_time_modal_body">
+              <Box className="update_time_section">
+                <Box className="counter_section">
+                <Button className={counter > 1 ? "counter_btn" : "disable_counter_btn"} onClick={handleDecrement}><FaMinus /></Button>
+                  <span className="counter">{counter}</span>
+                  <Button className="counter_btn" onClick={() => setCounter(prev => prev + 1)}><FiPlus /></Button>
+                </Box>
+                <FormControl display='flex' alignItems='center'>
+                    <FormLabel htmlFor='infinite-time' mb='0'>
+                      Enable infinite time for question?
+                    </FormLabel>
+                    <Switch id='infinite-time' isChecked={isInfiniteTime} onChange={handleChange} />
+                </FormControl>
+              </Box>
+            </Box>
+          }
+          footer={
+            <Button className='modal_btn' onClick={handleUpdatequestionTime}>
+                Update
+            </Button>
+          }
+        />
+      }
       <Textarea
         type='text'
         placeholder='Ask question?'
@@ -145,7 +212,7 @@ const QuestionForm = ({ id }) => {
       </Box>
 
       <Box className='option_box'>
-        <Box className='option_header'>Option B</Box>
+        <Box className='option_header'>Option C</Box>
         <InputComp
           type='text'
           placeholder={"Enter third option"}

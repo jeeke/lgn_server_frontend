@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import Layout from "../../Layout/Layout";
 import "./Notification.css";
 import {
@@ -27,13 +27,17 @@ import {GlobalContext} from "../../Context/Context"
 
 
 const Notification = () => {
-  const {notifications, setNotifications} = GlobalContext();
+  const {notifications, setNotifications, setPageType} = GlobalContext();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [paginationLoading, setPaginationLoading] = useState(false);
   const [count, setCount] = useState(10);
   const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    setPageType('home');
+  }, []);
 
   useEffect(() => {
     if(page === 1) {

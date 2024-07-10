@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import Layout from "../../Layout/Layout";
 import { MdKeyboardBackspace } from "react-icons/md";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -26,14 +26,21 @@ import QuestionForm from "./QuestionForm";
 import QuestionList from "./QuestionList";
 import Leaderboard from "./Leaderboard";
 import { useSocket, socket } from "../../socket/socket.js";
+import {GlobalContext} from "../../Context/Context";
+import Pusher from "pusher-js"
 
 const TourDetails = () => {
+  const {setPageType} = GlobalContext();
   const navigate = useNavigate();
   const { id } = useParams();
   const [tournamentDetails, setturnamentDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [select, setSelect] = useState("one");
   useSocket();
+
+  useLayoutEffect(() => {
+    setPageType("tournament_details")
+  })
 
   useEffect(() => {
     setLoading(true);
@@ -57,6 +64,24 @@ const TourDetails = () => {
         console.log(error);
       });
   }, [id]);
+
+  useEffect(() => {
+    const pusher = new Pusher(process.env.REACT_APP_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
+      useTLS: true
+    });
+
+    const channel = pusher.subscribe('tournament-question');
+    channel.bind('tournament-question-notification', function(data) {
+      console.log('Received tournament question:', data);
+      // Handle the updatedQuestion data as needed
+    });
+
+    return () => {
+      channel.unbind(); // Unbind event listeners when component unmounts
+      pusher.unsubscribe('tournament-question'); // Unsubscribe from channel
+    };
+  }, []);
 
   return (
     <Layout>
