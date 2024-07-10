@@ -51,3 +51,11 @@ body {
 .chakra-table__container {
   white-space: normal !important;
 }
+.table__container::-webkit-scrollbar {
+  display: none !important;;
+}
+/* Hide the scrollbar for Internet Explorer, Edge and Firefox */
+.table__container {
+  -ms-overflow-style: none !important; /* Internet Explorer and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}

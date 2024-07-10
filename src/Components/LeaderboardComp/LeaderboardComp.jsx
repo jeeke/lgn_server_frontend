@@ -21,7 +21,7 @@ const LeaderboardComp = ({data, index}) => {
     <Tr>
         <Td className='td'>{index}</Td>
         <Td className='td'>{data.userId.name}</Td>
-        <Td className='td notification_decription'>{data.correctPredictions}</Td>
+        <Td className='td notification_decription'>{data.points}</Td>
     </Tr>
     </>
   )

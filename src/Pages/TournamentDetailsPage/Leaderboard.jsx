@@ -52,7 +52,7 @@ const Leaderboard = ({ id }) => {
             <Tr>
               <Th className='table_header_item'>SL NO</Th>
               <Th className='table_header_item'>User name</Th>
-              <Th className='table_header_item'>Correct Prediction</Th>
+              <Th className='table_header_item'>Points</Th>
             </Tr>
           </Thead>
           {loading ? (

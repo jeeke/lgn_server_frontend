@@ -1,13 +1,15 @@
 /** @format */
 
 import React, { useState } from "react";
-import { Box, Tr, Td, Img, Button, useToast } from "@chakra-ui/react";
+import { Box, Tr, Td, Img, Button, useToast, Input, Spinner } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { FaRegEdit } from "react-icons/fa";
 import axios from "axios";
 import AlertModal from "../modalComp/AlertModal";
 import FullModal from "../modalComp/FullModal";
 import Inputcomp from "../../Components/InputComp/InputComp";
+import { FiUpload } from "react-icons/fi";
+import {MdClose} from "react-icons/md";
 
 const BannerComp = ({ data, index }) => {
   const toast = useToast();
@@ -17,10 +19,12 @@ const BannerComp = ({ data, index }) => {
   const [bannerId, setBannerId] = useState("");
   const [title, setTitle] = useState(data.name);
   const [link, setLink] = useState(data.link);
-  const [image, setImage] = useState(data.image);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [updateImage, setUpdateImage] = useState("");
-  const [updatePrevImage, setUpdatePrevImage] = useState("");
+  const [originalBannerImage, setOriginalBannerImage] = useState(data.image);
+  const [image, setImage] = useState("");
+  const [prevImage, setPrevImage] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   const handleChangestatus = (id, value) => {
     let data = JSON.stringify({
@@ -100,53 +104,55 @@ const BannerComp = ({ data, index }) => {
   };
 
   const handleImageChange = (e) => {
-    setUpdateImage(e.target.files[0]);
-    setUpdatePrevImage(URL.createObjectURL(e.target.files[0]));
+    setImage(e.target.files[0]);
+    setPrevImage(URL.createObjectURL(e.target.files[0]));
   };
 
   const handleCloseImage = () => {
-    setUpdatePrevImage("");
-    setUpdateImage("");
+    setImage("");
+    setPrevImage("");
+    setOriginalBannerImage("")
   };
   /* API to update banner details */
   const handleUpdateBannerEdit = () => {
-    let data = JSON.stringify({
-      name: title,
-      link: link,
-    });
+    setLoading(true);
+    const myHeaders = new Headers();
+    myHeaders.append("x-access-token", localStorage.getItem("token"));
 
-    let config = {
-      method: "put",
-      maxBodyLength: Infinity,
-      url: `${process.env.REACT_APP_BASE_URL}api/v1/banners/update/${bannerId}`,
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-        "Content-Type": "application/json",
-      },
-      data: data,
+    const formdata = new FormData();
+    formdata.append("name", title);
+    formdata.append("link", link);
+    formdata.append("image", image);
+
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow"
     };
-
-    axios
-      .request(config)
-      .then((response) => {
-        // console.log(response.data);
-        toast({
-          title: "Success.",
-          description: `${response.data.message}`,
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-        });
-        if (response.data.status === 200) {
-          setTitle(response.data.data.name);
-          setLink(response.data.data.link);
-          setOpenEditModal(false);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setOpenEditModal(false);
+    fetch(`${process.env.REACT_APP_BASE_URL}api/v1/banners/update/${bannerId}`, requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      toast({
+        title: "Success.",
+        description: `${result.message}`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
       });
+      if (result.status === 200) {
+        setTitle(result.data.name);
+        setLink(result.data.link);
+        setOriginalBannerImage(result.data.image);
+        setImage("");
+        setPrevImage("");
+        setLoading(false);
+        setOpenEditModal(false);
+      }
+    })
+    .catch((error) => {
+      console.error(error)
+    });
   };
   return (
     <>
@@ -196,37 +202,45 @@ const BannerComp = ({ data, index }) => {
               />
             </Box>
 
-            {/* {
-                    image ?
-                    <Box className='banner_image_preview_setion'>
-                        <Image src={image} className='preview_image' />
-                        <Button className='close_prev_btn' onClick={handleCloseImage}>
-                            <MdClose />
-                        </Button>
-                    </Box> :
-                    <>
-                    {
-                        updateImage ? <Box className='banner_image_preview_setion'>
-                        <Image src={updateImage} className='preview_image' />
-                        <Button className='close_prev_btn' onClick={handleCloseImage}>
-                            <MdClose />
-                        </Button>
-                    </Box> 
-                     : 
-                     <Box className='banner_image_section'>
-                        <label htmlFor='banner_image'>
-                            <FiUpload className='banner_file_icon' />
-                        </label>
-                        <Input type="file" id='banner_image' className='file_input' onChange={e => handleImageChange(e)} />
-                    </Box>
-                    }
-                    </>
-                } */}
+            {
+              image ?
+              <Box className='banner_image_preview_setion'>
+                <Img src={prevImage} className='preview_image' />
+                <Button className='close_prev_btn' onClick={handleCloseImage}>
+                  <MdClose />
+                </Button>
+              </Box> :
+              <>
+              {
+                originalBannerImage ?
+                <Box className='banner_image_preview_setion'>
+                  <Img src={originalBannerImage} className='preview_image' />
+                    <Button className='close_prev_btn' onClick={handleCloseImage}>
+                      <MdClose />
+                    </Button>
+                </Box> 
+                : 
+                <Box className='banner_image_section'>
+                  <label htmlFor='banner_image'>
+                    <FiUpload className='banner_file_icon' />
+                  </label>
+                  <Input 
+                    type="file" 
+                    id='banner_image' 
+                    className='file_input' 
+                    onChange={e => handleImageChange(e)} 
+                  />
+                </Box>
+              }
+              </>
+            }
           </Box>
         }
         footer={
           <Button className='modal_btn' onClick={handleUpdateBannerEdit}>
-            Update
+            {
+              loading ? <Spinner /> : <>Update</>
+            }
           </Button>
         }
       />
@@ -235,7 +249,7 @@ const BannerComp = ({ data, index }) => {
           <Td className='td'>{index}</Td>
           <Td className='td'>{title}</Td>
           <Td className='td'>
-            <Img src={data.image} className='table_image' />
+            <Img src={originalBannerImage} className='table_image' />
           </Td>
           <Td className='td'>
             {status === "active" ? (

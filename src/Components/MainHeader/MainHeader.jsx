@@ -14,6 +14,7 @@ import { MdOutlineNotificationsActive } from "react-icons/md";
 import axios from "axios";
 import Loader from '../Loader/Loader';
 import MenuNotification from '../NotificationComp/MenuNotification';
+import Pusher from 'pusher-js';
 
 const MainHeader = () => {
   const navigate = useNavigate();
@@ -60,6 +61,25 @@ const MainHeader = () => {
       });
     }
   }, [page, openNotificationMenu]);
+
+  /* PUSHER CODE IMPLEMENTATION */
+  useEffect(() => {
+    const pusher = new Pusher(process.env.REACT_APP_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
+      useTLS: true
+    });
+
+    const channel = pusher.subscribe('admin-channel');
+    channel.bind('admin-notification', function(data) {
+      console.log('Received admin notification:', data);
+      // Handle the notification data as needed
+    });
+
+    return () => {
+      channel.unbind(); // Unbind event listeners when component unmounts
+      pusher.unsubscribe('admin-channel'); // Unsubscribe from channel
+    };
+  }, []);
 
   return (
     <Box className='main_header'>

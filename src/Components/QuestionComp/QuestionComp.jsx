@@ -24,8 +24,12 @@ import AlertModal from "../modalComp/AlertModal";
 import FullModal from "../modalComp/FullModal";
 import Inputcomp from "../../Components/InputComp/InputComp";
 import { useSocket, socket } from "../../socket/socket";
+import getRemaingTime from "../../utils/getRemainTime";
+import { MdAccessTime } from "react-icons/md";
+import { useParams } from "react-router-dom";
 
-const QuestionComp = ({ data, index }) => {
+const QuestionComp = ({ data, index, setUpdateQuestions }) => {
+  const {id} = useParams();
   const toast = useToast();
   useSocket();
   const [status, setStatus] = useState(data.status);
@@ -71,22 +75,25 @@ const QuestionComp = ({ data, index }) => {
           duration: 9000,
           isClosable: true,
         });
-        socket.emit("tournament notification", response.data.question);
+        setUpdateQuestions(response.data.question)
+        // socket.emit("tournament notification", response.data.question);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  const handlechangeAnswerOption = (value, id) => {
+  const handlechangeAnswerOption = (value, questionId) => {
     let data = JSON.stringify({
-      option: value,
+      "option": value,
+      "tournamentId": id
     });
+
 
     let config = {
       method: "put",
       maxBodyLength: Infinity,
-      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-answer/${id}`,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-answer/${questionId}`,
       headers: {
         "x-access-token": localStorage.getItem("token"),
         "Content-Type": "application/json",
@@ -98,6 +105,7 @@ const QuestionComp = ({ data, index }) => {
       .request(config)
       .then((response) => {
         // console.log(response.data);
+        setUpdateQuestions(response.data.question)
         setcorrectOption(response.data.question.correctOption);
         toast({
           title: "Success.",
@@ -194,27 +202,31 @@ const QuestionComp = ({ data, index }) => {
           <Td className='td'>
             <Img src={data.optionB.image} className='option_image' />
           </Td>
-          <Td className='td'>{data.optionC.text}</Td>
+          <Td className='td'>{data.optionC.text ? data.optionC.text : "NA"}</Td>
           <Td className='td'>
-            <Img src={data.optionC.image} className='option_image' />
+            {
+              data.optionC.image ? <Img src={ data.optionC.image} className='option_image' /> : "NA"
+            }
+            
           </Td>
-          <Td className='td'>{data.optionD.text}</Td>
+          <Td className='td'>{data.optionD.text ? data.optionD.text : "NA"}</Td>
           <Td className='td'>
-            <Img src={data.optionD.image} className='option_image' />
+          {
+            data.optionD.image ? <Img src={data.optionD.image} className='option_image' /> : "NA"
+          }
           </Td>
+          <Td className="td">{getRemaingTime(data.validUntil).minutes>=0 ? <>{getRemaingTime(data.validUntil).minutes}:{getRemaingTime(data.validUntil).seconds}</> : "0"}</Td> 
           {/* <Td className="td">{data.createdAt}</Td> */}
           <Td className='td'>
-            {status === "active" ? (
+            {status === "Initialised" ? (
               <Button
-                className='table_btn active'
-                onClick={() => handleChangestatus(data._id, "inactive")}>
-                Active
+                className={`table_btn active ${status}`}
+                onClick={() => handleChangestatus(data._id, "Active")}>
+                Initialised
               </Button>
             ) : (
-              <Button
-                className='table_btn inactive'
-                onClick={() => handleChangestatus(data._id, "active")}>
-                Inactive
+              <Button className='table_btn active'>
+                {data.status}
               </Button>
             )}
           </Td>
@@ -249,36 +261,49 @@ const QuestionComp = ({ data, index }) => {
                     Option B
                   </MenuItem>
 
-                  <MenuItem
+                  {data.optionC.text && <MenuItem
                     className='menu_item'
                     onClick={() =>
                       handlechangeAnswerOption("optionC", data._id)
                     }>
                     Option C
-                  </MenuItem>
+                  </MenuItem>}
 
-                  <MenuItem
+                  {data.optionD.text && <MenuItem
                     className='menu_item'
                     onClick={() =>
                       handlechangeAnswerOption("optionD", data._id)
                     }>
                     Option D
-                  </MenuItem>
+                  </MenuItem>}
                 </MenuList>
               </Menu>
             )}
           </Td>
 
           <Td className='td'>
-            <Button
+            {
+              status === "Initialised"  && <Button
               className='table_delete_btn'
               onClick={() => handleOpenDeleteModal(data._id)}>
               <AiOutlineDelete />
             </Button>
+            }
 
-            <Button className='table_edit_btn'>
+            {/* {
+              status !== "active" && <Button
+              className='table_delete_btn'
+              onClick={() => handleOpenDeleteModal(data._id)}>
+              <MdAccessTime />
+            </Button>
+            } */}
+
+            {
+              status === "Initialised" && <Button className='table_edit_btn'>
               <FaRegEdit />
             </Button>
+            }
+            
           </Td>
         </Tr>
       )}

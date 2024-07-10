@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import Layout from "../../Layout/Layout";
 import "./SupportPage.css";
 import axios from "axios";
@@ -22,11 +22,17 @@ import SupportComp from "../../Components/SupportComp/SupportComp";
 import Loader from "../../Components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardBackspace } from "react-icons/md";
+import { GlobalContext } from "../../Context/Context";
 
 const SupportPage = () => {
+  const {setPageType} = GlobalContext()
   const [loading, setLoading] = useState(false);
   const [lists, setLists] = useState([]);
   const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    setPageType("Banner")
+  })
 
   useEffect(() => {
     setLoading(true);

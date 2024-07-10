@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import axios from "axios";
 import {
   Box,
@@ -20,6 +20,7 @@ import {
 import QuestionComp from "../../Components/QuestionComp/QuestionComp";
 import { useSocket, socket } from "../../socket/socket";
 import Loader from "../../Components/Loader/Loader";
+import {GlobalContext} from "../../Context/Context"
 
 const QuestionList = ({ id }) => {
   useSocket();
@@ -29,6 +30,9 @@ const QuestionList = ({ id }) => {
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState(10);
   const [loadPageBtn, setLoadPageBtn] = useState(false);
+  const [updatequestions,setUpdateQuestions] = useState(null);
+
+  
 
   useEffect(() => {
     if (page === 1) {
@@ -37,7 +41,7 @@ const QuestionList = ({ id }) => {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/${id}?page=${page}&limit=${limit}`,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/list/${id}?page=${page}&limit=${limit}`,
       headers: {
         "x-access-token": localStorage.getItem("token"),
       },
@@ -46,7 +50,7 @@ const QuestionList = ({ id }) => {
     axios
       .request(config)
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data);
         setCount(response.data.questions.length);
         if (page === 1) {
           setQuestions(response.data.questions);
@@ -59,7 +63,7 @@ const QuestionList = ({ id }) => {
       .catch((error) => {
         console.log(error);
       });
-  }, [id]);
+  }, [id, updatequestions]);
 
   useEffect(() => {
     socket.on("message", (data) => {
@@ -76,25 +80,25 @@ const QuestionList = ({ id }) => {
     <Box className='banner_section'>
       <TableContainer>
         <Table variant='simple'>
-          <Thead className='table_head'>
+          <Thead className='table_head question_header_title'>
             <Tr>
-              <Th className='table_header_item'>SL NO</Th>
-              <Th className='table_header_item'>Quesion</Th>
-              <Th className='table_header_item'>Option A</Th>
-              <Th className='table_header_item'>Option A Image</Th>
-              <Th className='table_header_item'>Option B</Th>
-              <Th className='table_header_item'>Option B Image</Th>
-              <Th className='table_header_item'>Option C</Th>
-              <Th className='table_header_item'>Option C Image</Th>
-              <Th className='table_header_item'>Option D</Th>
-              <Th className='table_header_item'>Option D Image</Th>
-              <Th className='table_header_item'>status</Th>
-              <Th className='table_header_item'>Coorect Option</Th>
-              <Th className='table_header_item'>Action</Th>
+              <Th className='table_header_item question_header_title'>SL NO</Th>
+              <Th className='table_header_item question_header_title'>Quesion</Th>
+              <Th className='table_header_item question_header_title'>Option A</Th>
+              <Th className='table_header_item question_header_title'>Option A Image</Th>
+              <Th className='table_header_item question_header_title'>Option B</Th>
+              <Th className='table_header_item question_header_title'>Option B Image</Th>
+              <Th className='table_header_item question_header_title'>Option C</Th>
+              <Th className='table_header_item question_header_title'>Option C Image</Th>
+              <Th className='table_header_item question_header_title'>Option D</Th>
+              <Th className='table_header_item question_header_title'>Option D Image</Th>
+              <Th className='table_header_item question_header_title'>time remaining</Th>
+              <Th className='table_header_item question_header_title'>status</Th>
+              <Th className='table_header_item question_header_title'>Coorect Option</Th>
+              <Th className='table_header_item question_header_title'>Action</Th>
             </Tr>
           </Thead>
           {loading ? (
-            // Loader Section
             <Tr className='empty_table_row'>
               <Td className='empty_table_row' colSpan='13'>
                 <Box className='empty_table_list'>
@@ -109,7 +113,7 @@ const QuestionList = ({ id }) => {
                 <>
                   {questions.map((data, index) => (
                     <Tbody key={data._id}>
-                      <QuestionComp data={data} index={index + 1} />
+                      <QuestionComp data={data} index={index + 1} setUpdateQuestions={setUpdateQuestions} />
                     </Tbody>
                   ))}
                   {count === limit && (
