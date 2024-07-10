@@ -113,7 +113,7 @@ const QuestionList = ({ id }) => {
                 <>
                   {questions.map((data, index) => (
                     <Tbody key={data._id}>
-                      <QuestionComp data={data} index={index + 1} setUpdateQuestions={setUpdateQuestions} />
+                      <QuestionComp questions={questions} data={data} index={index + 1} setUpdateQuestions={setUpdateQuestions} />
                     </Tbody>
                   ))}
                   {count === limit && (

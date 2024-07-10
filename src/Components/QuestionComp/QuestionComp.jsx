@@ -11,10 +11,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
+  Switch, FormControl, FormLabel,
   useToast,
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -27,8 +24,11 @@ import { useSocket, socket } from "../../socket/socket";
 import getRemaingTime from "../../utils/getRemainTime";
 import { MdAccessTime } from "react-icons/md";
 import { useParams } from "react-router-dom";
+import { FiPlus } from "react-icons/fi";
+import { FaMinus } from "react-icons/fa6";
+import { TfiInfinite } from "react-icons/tfi";
 
-const QuestionComp = ({ data, index, setUpdateQuestions }) => {
+const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   const {id} = useParams();
   const toast = useToast();
   useSocket();
@@ -39,11 +39,22 @@ const QuestionComp = ({ data, index, setUpdateQuestions }) => {
   const [correctOption, setcorrectOption] = useState(data.correctOption || "");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(data.isDelete || false);
+  const [validUntil, setvalidUntil] = useState(data.validUntil)
+  const [timeRemaining, setTimeRemaining] = useState(getRemaingTime(data.validUntil));
+  const [updateTimeModal, setUpdateTimeModal] = useState(false);
+  const [counter, setCounter] = useState(3);
+  const [isInfiniteTime, setIsInfiniteTime] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(false);
+  
 
   const handleChangestatus = (id, value) => {
+    const containsIsInfinteTrue = questions.some(item => item.isInfinte === true);
     setQuestionId(id);
-    setOpenstatusModal(true);
     setupdateValue(value);
+    setUpdateTimeModal(true);
+    if (containsIsInfinteTrue) {
+      setConfirmModal(true);
+    }
   };
 
   const handlechangeOption = () => {
@@ -155,8 +166,119 @@ const QuestionComp = ({ data, index, setUpdateQuestions }) => {
       });
   };
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimeRemaining(getRemaingTime(validUntil));
+    }, 1000);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [timeRemaining, validUntil]);
+
+  const handleUpdatequestionTime = () => {
+    // alert(counter)
+    let data = JSON.stringify({
+      "time": counter,
+      "isInfiniteTime": isInfiniteTime
+    });
+    
+    let config = {
+      method: 'put',
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-time/${questionId}`,
+      headers: { 
+        'x-access-token': localStorage.getItem("token"), 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      console.log((response.data));
+      toast({
+        title: "Success.",
+        description: `${response.data.message}`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+      setUpdateTimeModal(false);
+      handlechangeOption()
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  const handleDecrement = () => {
+    if(counter > 1) {
+      setCounter(prev => prev - 1)
+    } else {
+      toast({
+        title: "Warning",
+        description: "Timer value cannot be Zero or negative",
+        status: "warning",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleChange = (event) => {
+    setIsInfiniteTime(event.target.checked);
+  };
+
   return (
     <>
+    {
+        updateTimeModal &&
+        <AlertModal 
+          isOpen={updateTimeModal}
+          onClose={() => setUpdateTimeModal(false)}
+          title={"Update question validity time"}
+          body={
+            <Box className="question_time_modal_body">
+              <Box className="update_time_section">
+                <Box className="counter_section">
+                <Button className={counter > 1 ? "counter_btn" : "disable_counter_btn"} onClick={handleDecrement}><FaMinus /></Button>
+                  <span className="counter">{counter}</span>
+                  <Button className="counter_btn" onClick={() => setCounter(prev => prev + 1)}><FiPlus /></Button>
+                </Box>
+                <FormControl display='flex' alignItems='center'>
+                    <FormLabel htmlFor='infinite-time' mb='0'>
+                      Enable infinite time for question?
+                    </FormLabel>
+                    <Switch id='infinite-time' isChecked={isInfiniteTime} onChange={handleChange} />
+                </FormControl>
+              </Box>
+            </Box>
+          }
+          footer={
+            <Button className='modal_btn' onClick={handleUpdatequestionTime}>
+                Update
+            </Button>
+          }
+        />
+      }
+      {
+        confirmModal &&
+        <AlertModal 
+          isOpen={confirmModal}
+          onClose={() => setConfirmModal(false)}
+          title={"Update question validity time"}
+          body={
+            <Box className="question_time_modal_body">
+              Some of the question has set infinite time duartion do you want to inactive all those questions?
+            </Box>
+          }
+          footer={
+            <Button className='modal_btn' onClick={() => setConfirmModal(false)}>
+                Yes
+            </Button>
+          }
+        />
+      }
       {openStatusModal && (
         <AlertModal
           isOpen={openStatusModal}
@@ -215,7 +337,16 @@ const QuestionComp = ({ data, index, setUpdateQuestions }) => {
             data.optionD.image ? <Img src={data.optionD.image} className='option_image' /> : "NA"
           }
           </Td>
-          <Td className="td">{getRemaingTime(data.validUntil).minutes>=0 ? <>{getRemaingTime(data.validUntil).minutes}:{getRemaingTime(data.validUntil).seconds}</> : "0"}</Td> 
+          <Td className="td">
+            {
+              data.isInfinte ? <TfiInfinite /> : 
+              <>
+              {timeRemaining.minutes>=0 ? 
+<>{timeRemaining.minutes}:{timeRemaining.seconds>= 10 ? timeRemaining.seconds : `0${timeRemaining.seconds}`}</> : "0"
+}
+              </>
+            }
+          </Td> 
           {/* <Td className="td">{data.createdAt}</Td> */}
           <Td className='td'>
             {status === "Initialised" ? (
