@@ -27,6 +27,7 @@ const QuestionForm = ({ id }) => {
   const [selectTime, setSelectTime] = useState();
   const [counter, setCounter] = useState(3);
   const [isInfiniteTime, setIsInfiniteTime] = useState(false);
+  const [questionId, setquestionId] = useState("")
 
   useEffect(() => {
     if (
@@ -109,7 +110,8 @@ const QuestionForm = ({ id }) => {
           setOpt4Img("");
           setQuestion("");
           setLoading(false);
-          setUpdateTimeModal(true)
+          setquestionId(result.question._id)
+          // setUpdateTimeModal(true);
         }
       })
       .catch((error) => console.error(error));
@@ -131,10 +133,32 @@ const QuestionForm = ({ id }) => {
 
   const handleChange = (event) => {
     setIsInfiniteTime(event.target.checked);
-    // You can add additional logic here, e.g., updating the form data or making an API call
   };
 
-  const handleUpdatequestionTime = () => {}
+  const handleUpdatequestionTime = () => {
+    let data = JSON.stringify({
+      "time": isInfiniteTime ? null : counter
+    });
+    
+    let config = {
+      method: 'put',
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-time/${questionId}`,
+      headers: { 
+        'x-access-token': localStorage.getItem("token"), 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      console.log((response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
 
   return (
     <Box className='question_form_section'>
