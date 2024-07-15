@@ -32,8 +32,6 @@ const QuestionList = ({ id }) => {
   const [loadPageBtn, setLoadPageBtn] = useState(false);
   const [updatequestions,setUpdateQuestions] = useState(null);
 
-  
-
   useEffect(() => {
     if (page === 1) {
       setLoading(true);
@@ -63,7 +61,7 @@ const QuestionList = ({ id }) => {
       .catch((error) => {
         console.log(error);
       });
-  }, [id, updatequestions]);
+  }, [id, updatequestions, page]);
 
   useEffect(() => {
     socket.on("message", (data) => {
@@ -78,20 +76,13 @@ const QuestionList = ({ id }) => {
 
   return (
     <Box className='banner_section'>
-      <TableContainer>
+     {/*} <TableContainer>
         <Table variant='simple'>
           <Thead className='table_head question_header_title'>
             <Tr>
               <Th className='table_header_item question_header_title'>SL NO</Th>
               <Th className='table_header_item question_header_title'>Quesion</Th>
-              <Th className='table_header_item question_header_title'>Option A</Th>
-              <Th className='table_header_item question_header_title'>Option A Image</Th>
-              <Th className='table_header_item question_header_title'>Option B</Th>
-              <Th className='table_header_item question_header_title'>Option B Image</Th>
-              <Th className='table_header_item question_header_title'>Option C</Th>
-              <Th className='table_header_item question_header_title'>Option C Image</Th>
-              <Th className='table_header_item question_header_title'>Option D</Th>
-              <Th className='table_header_item question_header_title'>Option D Image</Th>
+              <Th className='table_header_item question_header_title'>Options</Th>
               <Th className='table_header_item question_header_title'>time remaining</Th>
               <Th className='table_header_item question_header_title'>status</Th>
               <Th className='table_header_item question_header_title'>Coorect Option</Th>
@@ -100,7 +91,7 @@ const QuestionList = ({ id }) => {
           </Thead>
           {loading ? (
             <Tr className='empty_table_row'>
-              <Td className='empty_table_row' colSpan='13'>
+              <Td className='empty_table_row' colSpan='7'>
                 <Box className='empty_table_list'>
                   <Loader />
                 </Box>
@@ -109,7 +100,6 @@ const QuestionList = ({ id }) => {
           ) : (
             <>
               {(questions || []).length > 0 ? (
-                // Rendering components
                 <>
                   {questions.map((data, index) => (
                     <Tbody key={data._id}>
@@ -131,7 +121,6 @@ const QuestionList = ({ id }) => {
                   )}
                 </>
               ) : (
-                // Empty list section
                 <Tr className='empty_table_row'>
                   <Td className='empty_table_row' colSpan='13'>
                     <Box className='empty_table_list'>No data found</Box>
@@ -141,7 +130,62 @@ const QuestionList = ({ id }) => {
             </>
           )}
         </Table>
-      </TableContainer>
+       </TableContainer> */}
+       <TableContainer>
+            <Table variant='simple'>
+              <Thead className='table_head'>
+                <Tr>
+                  <Th className='table_header_item'>SL NO</Th>
+                  <Th className='table_header_item'>Quesion</Th>
+                  <Th className='table_header_item'>Options</Th>
+                  <Th className='table_header_item'>Time Remaining</Th>
+                  <Th className='table_header_item'>Status</Th>
+                  <Th className='table_header_item'>Correct Option</Th>
+                  <Th className='table_header_item'>Action</Th>
+                </Tr>
+              </Thead>
+              {loading ? (
+            <Tr className='empty_table_row'>
+              <Td className='empty_table_row' colSpan='7'>
+                <Box className='empty_table_list'>
+                  <Loader />
+                </Box>
+              </Td>
+            </Tr>
+          ) : (
+            <>
+              {(questions || []).length > 0 ? (
+                <>
+                  {questions.map((data, index) => (
+                    <Tbody key={data._id}>
+                      <QuestionComp questions={questions} data={data} index={index + 1} setUpdateQuestions={setUpdateQuestions} />
+                    </Tbody>
+                  ))}
+                  {count === limit && (
+                    <Tr className='empty_table_row'>
+                      <Td className='empty_table_row' colSpan='7'>
+                        <Box className='loadmore_table_list'>
+                          <Button
+                            className='load_more_btn'
+                            onClick={handleIncrementPage}>
+                            {loadPageBtn ? <Spinner /> : <>Load More</>}
+                          </Button>
+                        </Box>
+                      </Td>
+                    </Tr>
+                  )}
+                </>
+              ) : (
+                <Tr className='empty_table_row'>
+                  <Td className='empty_table_row' colSpan='13'>
+                    <Box className='empty_table_list'>No data found</Box>
+                  </Td>
+                </Tr>
+              )}
+            </>
+          )}
+            </Table>
+          </TableContainer>
     </Box>
   );
 };
