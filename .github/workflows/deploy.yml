@@ -12,8 +12,10 @@ jobs:
     strategy:
       matrix:
         project:
-          - lgn_user_frontend
-          - lgn_server_frontend
+          - name: lgn_user_frontend
+            web_dir: /var/www/html
+          - name: lgn_server_frontend
+            web_dir: /var/www/html/lgnsf
 
     steps:
     - name: Checkout code
@@ -26,19 +28,19 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd ${{ matrix.project }}
+        cd ${{ matrix.project.name }}
         npm install
 
     - name: Build project
       run: |
-        cd ${{ matrix.project }}
+        cd ${{ matrix.project.name }}
         CI=false npm run build
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: build-${{ matrix.project }}
-        path: ${{ matrix.project }}/build
+        name: build-${{ matrix.project.name }}
+        path: ${{ matrix.project.name }}/build
 
   deploy:
     needs: build-and-deploy
@@ -47,14 +49,16 @@ jobs:
     strategy:
       matrix:
         project:
-          - lgn_user_frontend
-          - lgn_server_frontend
+          - name: lgn_user_frontend
+            web_dir: /var/www/html
+          - name: lgn_server_frontend
+            web_dir: /var/www/html/lgnsf
 
     steps:
     - name: Download build artifacts
       uses: actions/download-artifact@v2
       with:
-        name: build-${{ matrix.project }}
+        name: build-${{ matrix.project.name }}
         path: build
 
     - name: Install SSH key
@@ -66,12 +70,13 @@ jobs:
       env:
         EC2_USER: ubuntu
         EC2_HOST: ec2-13-201-10-194.ap-south-1.compute.amazonaws.com
+        WEB_DIR: ${{ matrix.project.web_dir }}
       run: |
         ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
-          echo "Connecting to EC2 instance for ${{ matrix.project }}"
-          cd /home/ubuntu/${{ matrix.project }} || { echo "Directory not found"; exit 1; }
+          echo "Connecting to EC2 instance for ${{ matrix.project.name }}"
+          cd /home/ubuntu/${{ matrix.project.name }} || { echo "Directory not found"; exit 1; }
           echo "Setting directory permissions"
-          sudo chown -R $USER:$USER /home/ubuntu/${{ matrix.project }}
+          sudo chown -R $USER:$USER /home/ubuntu/${{ matrix.project.name }}
           echo "Pulling latest code from GitHub"
           git pull origin master || { echo "git pull failed"; exit 1; }
           echo "Installing dependencies"
@@ -79,14 +84,8 @@ jobs:
           echo "Building project"
           sudo npm run build || { echo "npm run build failed"; exit 1; }
 
-          if [ "${{ matrix.project }}" = "lgn_user_frontend" ]; then
-            WEB_DIR="/var/www/html"
-          else
-            WEB_DIR="/var/www/html/lgnsf"
-          fi
-
           echo "Copying files to $WEB_DIR"
           sudo rm -rf $WEB_DIR/*
-          sudo cp -r /home/ubuntu/${{ matrix.project }}/build/* $WEB_DIR/ || { echo "File copy failed"; exit 1; }
-          echo "Deployment successful for ${{ matrix.project }}"
+          sudo cp -r /home/ubuntu/${{ matrix.project.name }}/build/* $WEB_DIR/ || { echo "File copy failed"; exit 1; }
+          echo "Deployment successful for ${{ matrix.project.name }}"
         EOF
