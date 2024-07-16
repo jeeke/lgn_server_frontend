@@ -44,6 +44,8 @@ const Leaderboard = ({ id }) => {
         console.log(error);
       });
   }, [id]);
+
+  
   return (
     <Box className='question_form_section'>
       <TableContainer>
@@ -74,19 +76,6 @@ const Leaderboard = ({ id }) => {
                       <LeaderboardComp key={data._id} data={data} index={index + 1} />
                     </Tbody>
                   ))}
-                  {/*{count === limit && (
-                    <Tr className='empty_table_row'>
-                      <Td className='empty_table_row' colSpan='13'>
-                        <Box className='loadmore_table_list'>
-                          <Button
-                            className='load_more_btn'
-                            onClick={handleIncrementPage}>
-                            {loadPageBtn ? <Spinner /> : <>Load More</>}
-                          </Button>
-                        </Box>
-                      </Td>
-                    </Tr>
-                  )} */}
                 </>
               ) : (
                 // Empty list section

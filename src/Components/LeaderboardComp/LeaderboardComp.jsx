@@ -18,7 +18,9 @@ import {
 const LeaderboardComp = ({data, index}) => {
   return (
     <>
-    <Tr>
+    {
+      data.userId &&
+      <Tr>
         <Td className='td'>{index}</Td>
         {
           data.userId && 
@@ -26,6 +28,7 @@ const LeaderboardComp = ({data, index}) => {
         }
         <Td className='td notification_decription'>{data.points}</Td>
     </Tr>
+    }
     </>
   )
 }

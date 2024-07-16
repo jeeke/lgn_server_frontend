@@ -29,6 +29,7 @@ import { FaMinus } from "react-icons/fa6";
 import { TfiInfinite } from "react-icons/tfi";
 import Pusher from 'pusher-js';
 import { FaAngleDown } from "react-icons/fa6";
+import { AiOutlineClose } from "react-icons/ai";
 
 const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   // console.log(data)
@@ -48,6 +49,8 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   const [counter, setCounter] = useState(3);
   const [isInfiniteTime, setIsInfiniteTime] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
+  const [openRemoveOptionModal, setOpenRemoveOptionModal] = useState(false);
+  const [optionId, setOptionId] = useState("");
   
 
   const handleChangestatus = (id, value) => {
@@ -286,37 +289,41 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     };
   }, []);
 
-  const handleRemoveOption = (questionId, option, index) => {
-    if(option.status === "Active") {
-      let data = JSON.stringify({
-        "optionId": option._id,
-        "status": "Inactive"
-      });
-      
-      let config = {
-        method: 'put',
-        maxBodyLength: Infinity,
-        url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-question-status/${questionId}`,
-        headers: { 
-          'x-access-token': localStorage.getItem("token"), 
-          'Content-Type': 'application/json'
-        },
-        data : data
-      };
-      
-      axios.request(config)
-      .then((response) => {
-        setUpdateQuestions(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    }
+  const handleRemoveOption = () => {
+    let data = JSON.stringify({
+      "optionId": optionId,
+      "status": "Inactive"
+    });
+    let config = {
+      method: 'put',
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-question-status/${questionId}`,
+      headers: { 
+        'x-access-token': localStorage.getItem("token"), 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      setUpdateQuestions(response.data);
+      setUpdateTimeModal(true)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  const handleOpenCloseOptionModal = (questionId, option) => {
+    setOpenRemoveOptionModal(true);
+    setQuestionId(questionId);
+    setOptionId(option._id);
   }
 
   return (
     <>
-    {
+      {/* {
         updateTimeModal &&
         <AlertModal 
           isOpen={updateTimeModal}
@@ -345,7 +352,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
             </Button>
           }
         />
-      }
+      } */}
       {
         confirmModal &&
         <AlertModal 
@@ -364,6 +371,26 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
           }
         />
       }
+
+      {
+        openRemoveOptionModal &&
+        <AlertModal 
+          isOpen={openRemoveOptionModal}
+          onClose={() => setOpenRemoveOptionModal(false)}
+          title={"Remove option"}
+          body={
+            <Box className="question_time_modal_body">
+              Do you want to remove this option
+            </Box>
+          }
+          footer={
+            <Button className='modal_btn' onClick={handleRemoveOption}>
+                Remove
+            </Button>
+          }
+        />
+      }
+
       {openStatusModal && (
         <AlertModal
           isOpen={openStatusModal}
@@ -413,18 +440,23 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
                 <MenuButton as={Button} className="question_option_list" rightIcon={<FaAngleDown />}>
                   Question options
                 </MenuButton>
-                <MenuList>
+                <MenuList className="question_options_menu_list">
                   {
                     data.options.map((item, index) => (
                       <MenuItem
                         className={item.status === "Inactive" ? 'question_menu_item line_through' : 'question_menu_item'}
-                        onClick={() =>
-                        handleRemoveOption(data._id, item, index)
-                      }>
-                        <Img src={item.image} className="question_option_image" />
-                        <span className={data.correctOption === item._id.toString() ? "question_option_text selected_question_option_text" : "question_option_text"}>
-                        {item.text}
-                      </span>
+                        >
+                        <Box className="question_info_box">
+                          <Img src={item.image} className="question_option_image" />
+                          <span className={data.correctOption === item._id.toString() ? "question_option_text selected_question_option_text" : "question_option_text"}>
+                            {item.text}
+                          </span>
+                        </Box>
+                        <Button className="question_remove_btn" 
+                          onClick={() => handleOpenCloseOptionModal(data._id, item, index)}
+                        >
+                          <AiOutlineClose />
+                        </Button>
                       </MenuItem>
                     ))
                   }
@@ -467,7 +499,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
             <MenuButton as={Button} className="question_option_list" rightIcon={<FaAngleDown />}>
               Select correct option
             </MenuButton>
-            <MenuList>
+            <MenuList className="question_options_menu_list">
               {
                 data.options.map((item, index) => (
                   <MenuItem

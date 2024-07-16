@@ -275,6 +275,10 @@
   display: flex !important;
   align-items: center !important;
 }
+.question_options_menu_list {
+  height: 45vh !important;
+  overflow: scroll !important;
+}
 .question_option_image {
   width: 50px;
   height: 40px;
@@ -296,4 +300,18 @@
 .selected_question_option_text {
   color: rgb(56, 155, 91) !important;
   font-weight: bold;
+}
+.question_info_box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.question_remove_btn {
+  background-color: crimson !important;
+  color: aliceblue !important;
+  width: fit-content !important;
+  height: fit-content !important;
+  margin: 0 !important;
+  padding: 2px !important;
+  border-radius: 50px !important;
 }
