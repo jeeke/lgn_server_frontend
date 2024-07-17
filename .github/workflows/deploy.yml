@@ -1,4 +1,4 @@
-name: React.js Deployment
+name: Deploy lgn_server_frontend
 
 on:
   push:
@@ -8,60 +8,41 @@ on:
 jobs:
   build-and-deploy:
     runs-on: self-hosted
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18' # Specify the Node.js version required for your project
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build project
-      run: CI=false npm run build
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: build
-        path: build
-
-  deploy:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
 
     steps:
-    - name: Download build artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: build
-        path: build
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Install SSH key
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
 
-    - name: Deploy to EC2
-      env:
-        EC2_USER: ubuntu
-        EC2_HOST: ec2-52-66-253-179.ap-south-1.compute.amazonaws.com
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
-          echo "Connecting to EC2 instance"
-          cd /home/ubuntu/lgn_server_frontend|| { echo "Directory not found"; exit 1; }
-          echo "Setting directory permissions"
-          sudo chown -R $USER:$USER /home/ubuntu/lgn_server_frontend
-          echo "Pulling latest code from GitHub"
-          git pull origin master || { echo "git pull failed"; exit 1; }
-          echo "Installing dependencies"
-          sudo npm install || { echo "npm install failed"; exit 1; }
-          echo "Building project"
-          sudo npm run build || { echo "npm run build failed"; exit 1; }
-          echo "Copying files to /var/www/html/"
-          sudo cp -r /home/ubuntu/lgn_server_frontend/build/* /var/www/html/lgnsf || { echo "File copy failed"; exit 1; }
-          echo "Deployment successful"
-        EOF
+      - name: Install dependencies
+        run: |
+          cd lgn_server_frontend
+          npm install
+
+      - name: Build project
+        run: |
+          cd lgn_server_frontend
+          npm run build
+
+      - name: Deploy to EC2
+        env:
+          EC2_USER: ubuntu
+          EC2_HOST: YOUR_EC2_IP
+          PROJECT_DIR: /home/ubuntu/lgn_server_frontend
+          WEB_DIR: /var/www/html/lgnsf
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
+            cd ${{ env.PROJECT_DIR }} || { echo "Directory not found"; exit 1; }
+            git pull origin master || { echo "git pull failed"; exit 1; }
+            npm install || { echo "npm install failed"; exit 1; }
+            npm run build || { echo "npm run build failed"; exit 1; }
+            sudo chown -R $USER:www-data ${WEB_DIR}
+            sudo chmod -R 775 ${WEB_DIR}
+            sudo cp -r ${{ env.PROJECT_DIR }}/build/* ${WEB_DIR}/ || { echo "File copy failed"; exit 1; }
+            sudo chown -R www-data:www-data ${WEB_DIR}
+            echo "Deployment successful"
+          EOF
