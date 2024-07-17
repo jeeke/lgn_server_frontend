@@ -29,26 +29,28 @@ function App() {
     const pusher = new Pusher(process.env.REACT_APP_KEY, {
       cluster: process.env.REACT_APP_CLUSTER,
     });
-
+  
     // Subscribe to the channel
     const channel = pusher.subscribe('user-channel');
-
+  
     // Bind to an event
     channel.bind('admin-notification', (data) => {
-      // setNotifications((prevNotifications) => [...prevNotifications, data]);
       console.log(data);
-      if(data.fromAdmin === false) {
+      if (data.fromAdmin === false) {
         setNotifications((prevNotifications) => [data, ...prevNotifications]);
-        setNotificationsCount(prev => prev + 1)
+        setNotificationsCount((prev) => prev + 1);
       }
     });
-
+  
     // Cleanup function to unsubscribe from the channel
     return () => {
       channel.unbind_all();
       channel.unsubscribe();
+      pusher.disconnect(); // Disconnect Pusher when component unmounts
     };
-  }, []);
+  }, []); // Empty dependency array to run once
+  
+
   
   return (
     <div className="app">

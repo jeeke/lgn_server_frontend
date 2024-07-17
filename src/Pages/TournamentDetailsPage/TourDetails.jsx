@@ -39,7 +39,7 @@ const TourDetails = () => {
   useSocket();
 
   useLayoutEffect(() => {
-    setPageType("tournament_details")
+    setPageType("tournament_details__")
   })
 
   useEffect(() => {
@@ -65,23 +65,23 @@ const TourDetails = () => {
       });
   }, [id]);
 
-  useEffect(() => {
-    const pusher = new Pusher(process.env.REACT_APP_KEY, {
-      cluster: process.env.REACT_APP_CLUSTER,
-      useTLS: true
-    });
+  // useEffect(() => {
+  //   const pusher = new Pusher(process.env.REACT_APP_KEY, {
+  //     cluster: process.env.REACT_APP_CLUSTER,
+  //     useTLS: true
+  //   });
 
-    const channel = pusher.subscribe('tournament-question');
-    channel.bind('tournament-question-notification', function(data) {
-      console.log('Received tournament question:', data);
-      // Handle the updatedQuestion data as needed
-    });
+  //   const channel = pusher.subscribe('tournament-question');
+  //   channel.bind('tournament-question-notification', function(data) {
+  //     console.log('Received tournament question:', data);
+  //     // Handle the updatedQuestion data as needed
+  //   });
 
-    return () => {
-      channel.unbind(); // Unbind event listeners when component unmounts
-      pusher.unsubscribe('tournament-question'); // Unsubscribe from channel
-    };
-  }, []);
+  //   return () => {
+  //     channel.unbind(); // Unbind event listeners when component unmounts
+  //     pusher.unsubscribe('tournament-question'); // Unsubscribe from channel
+  //   };
+  // }, []);
 
   return (
     <Layout>

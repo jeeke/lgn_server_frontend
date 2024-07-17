@@ -1,120 +1,80 @@
-/** @format */
-
 import React, { useEffect, useState } from "react";
-import { Box, Textarea, useToast, Input, Button, Switch, FormControl, FormLabel } from "@chakra-ui/react";
+import {
+  Box,
+  Textarea,
+  useToast,
+  Input,
+  Button,
+  Switch,
+  FormControl,
+  FormLabel,
+} from "@chakra-ui/react";
 import InputComp from "../../Components/InputComp/InputComp";
 import ButtonComp from "../../Components/ButtonComp/AuthButton";
 import axios from "axios";
 import AlertModal from "../../Components/modalComp/AlertModal";
-import { update } from "react-spring";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { FaMinus } from "react-icons/fa6";
+
+const MAX_OPTIONS = 16;
 
 const QuestionForm = ({ id }) => {
   const toast = useToast();
   const [question, setQuestion] = useState("");
-  const [opt1, setOpt1] = useState("");
-  const [opt1Img, setOpt1Img] = useState("");
-  const [opt2, setOpt2] = useState("");
-  const [opt2Img, setOpt2Img] = useState("");
-  const [opt3, setOpt3] = useState("");
-  const [opt3Img, setOpt3Img] = useState("");
-  const [opt4, setOpt4] = useState("");
-  const [opt4Img, setOpt4Img] = useState("");
-  const [disable, setdisable] = useState(true);
+  const [options, setOptions] = useState([{ text: "", image: "" }, { text: "", image: "" }]); // Starting with 2 options
+  const [disable, setDisable] = useState(true);
   const [loading, setLoading] = useState(false);
   const [updateTimeModal, setUpdateTimeModal] = useState(false);
   const [selectTime, setSelectTime] = useState();
   const [counter, setCounter] = useState(3);
   const [isInfiniteTime, setIsInfiniteTime] = useState(false);
-  const [questionId, setquestionId] = useState("")
+  const [questionId, setQuestionId] = useState("");
 
   useEffect(() => {
-    if (
-      !question.trim() ||
-      !opt1.trim() ||
-      !opt2.trim()) {
-      setdisable(true);
+    if (!question.trim() || options.some(opt => !opt.text.trim())) {
+      setDisable(true);
     } else {
-      setdisable(false);
+      setDisable(false);
     }
-  }, [question, opt1, opt2]);
+  }, [question, options]);
 
-  const handleImageChange1 = (e) => {
-    setOpt1Img(e.target.files[0]);
+  const handleOptionChange = (index, field, value) => {
+    const newOptions = [...options];
+    newOptions[index][field] = value;
+    setOptions(newOptions);
   };
 
-  const handleImageChange2 = (e) => {
-    setOpt2Img(e.target.files[0]);
+  const handleImageChange = (index, e) => {
+    handleOptionChange(index, "image", e.target.files[0]);
   };
 
-  const handleImageChange3 = (e) => {
-    setOpt3Img(e.target.files[0]);
+  const handleAddOption = () => {
+    if (options.length < MAX_OPTIONS) {
+      setOptions([...options, { text: "", image: "" }]);
+    } else {
+      toast({
+        title: "Maximum Options Reached",
+        description: "You cannot add more than 16 options.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
-  const handleImageChange4 = (e) => {
-    setOpt4Img(e.target.files[0]);
-  };
-
-  const handleAskQuestion = () => {
-    setdisable(true);
-    setLoading(true);
-    const myHeaders = new Headers();
-    myHeaders.append("x-access-token", localStorage.getItem("token"));
-    const formdata = new FormData();
-    formdata.append("question", question);
-    formdata.append("tourId", id);
-    formdata.append("opt1", opt1);
-    formdata.append("image1", opt1Img);
-    formdata.append("opt2", opt2);
-    formdata.append("image2", opt2Img);
-    formdata.append("opt3", opt3);
-    formdata.append("image3", opt3Img);
-    formdata.append("opt4", opt4);
-    formdata.append("image4", opt4Img);
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow",
-    };
-    fetch(`${process.env.REACT_APP_BASE_URL}api/v1/questions/`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        if (result.status === 201) {
-          const now = new Date();
-          const expirationDate = new Date(result.question.validUntil);
-          const distance = expirationDate.getTime() - now.getTime();
-
-          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          console.log("M:", minutes);
-          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-          console.log("S:", seconds);
-          setSelectTime(minutes)
-          toast({
-            title: "Account created.",
-            description: "Question has been created",
-            status: "success",
-            duration: 9000,
-            isClosable: true,
-          });
-          setQuestion("")
-          setOpt1("");
-          setOpt1Img("");
-          setOpt2("");
-          setOpt2Img("");
-          setOpt3("");
-          setOpt3Img("");
-          setOpt4("");
-          setOpt4Img("");
-          setQuestion("");
-          setLoading(false);
-          setquestionId(result.question._id)
-          // setUpdateTimeModal(true);
-        }
-      })
-      .catch((error) => console.error(error));
+  const handleRemoveOption = (index) => {
+    if (options.length > 2) {
+      const newOptions = options.filter((_, optIndex) => optIndex !== index);
+      setOptions(newOptions);
+    } else {
+      toast({
+        title: "Minimum Options Required",
+        description: "You must have at least 2 options.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   const handleDecrement = () => {
@@ -129,10 +89,6 @@ const QuestionForm = ({ id }) => {
         isClosable: true,
       });
     }
-  };
-
-  const handleChange = (event) => {
-    setIsInfiniteTime(event.target.checked);
   };
 
   const handleUpdatequestionTime = () => {
@@ -160,11 +116,60 @@ const QuestionForm = ({ id }) => {
     });
   }
 
+  const handleAskQuestion = () => {
+    setDisable(true);
+    setLoading(true);
+    console.log("** Options:", options)
+    const myHeaders = new Headers();
+    myHeaders.append("x-access-token", localStorage.getItem("token"));
+    const formdata = new FormData();
+    formdata.append("question", question);
+    formdata.append("tourId", id);
+    options.forEach((opt, index) => {
+      formdata.append(`options[${index}][text]`, opt.text);
+      if (opt.image) {
+        formdata.append(`options[${index}][image]`, opt.image);
+      }
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow",
+    };
+    fetch(`${process.env.REACT_APP_BASE_URL}api/v1/questions/create`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        if (result.status === 201) {
+          const now = new Date();
+          const expirationDate = new Date(result.question.validUntil);
+          const distance = expirationDate.getTime() - now.getTime();
+
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          setSelectTime(minutes);
+          toast({
+            title: "Question created.",
+            description: "Your question has been created successfully.",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          });
+          setQuestion("");
+          setOptions([{ text: "", image: "" }, { text: "", image: "" }]);
+          setLoading(false);
+          setQuestionId(result.question._id);
+        }
+      })
+      .catch((error) => console.error(error));
+  };
+
   return (
-    <Box className='question_form_section'>
-      {
-        updateTimeModal &&
-        <AlertModal 
+    <Box className="question_form_section">
+      {updateTimeModal && (
+        <AlertModal
           isOpen={updateTimeModal}
           onClose={() => setUpdateTimeModal(false)}
           title={"Update question validity time"}
@@ -172,109 +177,79 @@ const QuestionForm = ({ id }) => {
             <Box className="question_time_modal_body">
               <Box className="update_time_section">
                 <Box className="counter_section">
-                <Button className={counter > 1 ? "counter_btn" : "disable_counter_btn"} onClick={handleDecrement}><FaMinus /></Button>
+                  <Button className={counter > 1 ? "counter_btn" : "disable_counter_btn"} onClick={handleDecrement}>
+                    <FaMinus />
+                  </Button>
                   <span className="counter">{counter}</span>
-                  <Button className="counter_btn" onClick={() => setCounter(prev => prev + 1)}><FiPlus /></Button>
+                  <Button className="counter_btn" onClick={() => setCounter((prev) => prev + 1)}>
+                    <FiPlus />
+                  </Button>
                 </Box>
-                <FormControl display='flex' alignItems='center'>
-                    <FormLabel htmlFor='infinite-time' mb='0'>
-                      Enable infinite time for question?
-                    </FormLabel>
-                    <Switch id='infinite-time' isChecked={isInfiniteTime} onChange={handleChange} />
+                <FormControl display="flex" alignItems="center">
+                  <FormLabel htmlFor="infinite-time" mb="0">
+                    Enable infinite time for question?
+                  </FormLabel>
+                  <Switch id="infinite-time" isChecked={isInfiniteTime} onChange={(e) => setIsInfiniteTime(e.target.checked)} />
                 </FormControl>
               </Box>
             </Box>
           }
-          footer={
-            <Button className='modal_btn' onClick={handleUpdatequestionTime}>
-                Update
-            </Button>
-          }
+          footer={<Button className="modal_btn" onClick={handleUpdatequestionTime}>Update</Button>}
         />
-      }
+      )}
       <Textarea
-        type='text'
-        placeholder='Ask question?'
-        className='textarea_input_form'
+        type="text"
+        placeholder="Ask question?"
+        className="textarea_input_form"
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
       />
-
-      {/* Options */}
-      <Box className='option_box'>
-        <Box className='option_header'>Option A</Box>
-        <InputComp
-          type='text'
-          placeholder={"Enter first option"}
-          className={"option_input"}
-          value={opt1}
-          handleChange={(e) => setOpt1(e.target.value)}
-        />
-        <br />
-        <Input
-          type='file'
-          className={"option_input"}
-          onChange={(e) => handleImageChange1(e)}
-        />
-      </Box>
-
-      <Box className='option_box'>
-        <Box className='option_header'>Option B</Box>
-        <InputComp
-          type='text'
-          placeholder={"Enter second option"}
-          className={"option_input"}
-          value={opt2}
-          handleChange={(e) => setOpt2(e.target.value)}
-        />
-        <br />
-        <Input
-          type='file'
-          className={"option_input"}
-          onChange={(e) => handleImageChange2(e)}
-        />
-      </Box>
-
-      <Box className='option_box'>
-        <Box className='option_header'>Option C</Box>
-        <InputComp
-          type='text'
-          placeholder={"Enter third option"}
-          className={"option_input"}
-          value={opt3}
-          handleChange={(e) => setOpt3(e.target.value)}
-        />
-        <br />
-        <Input
-          type='file'
-          className={"option_input"}
-          onChange={(e) => handleImageChange3(e)}
-        />
-      </Box>
-
-      <Box className='option_box'>
-        <Box className='option_header'>Option D</Box>
-        <InputComp
-          type='text'
-          placeholder={"Enter fourth option"}
-          className={"option_input"}
-          value={opt4}
-          handleChange={(e) => setOpt4(e.target.value)}
-        />
-        <br />
-        <Input
-          type='file'
-          className={"option_input"}
-          onChange={(e) => handleImageChange4(e)}
-        />
-      </Box>
-
+      {options.map((option, index) => (
+        <Box key={index} className="option_box">
+          <Box className="option_header">
+            Option {String.fromCharCode(65 + index)}
+            {
+              index>1 && <Button
+              onClick={() => handleRemoveOption(index)}
+              size="sm"
+              ml="2"
+              className="remove_option_btn"
+              leftIcon={<FiTrash2 />}
+            >
+            </Button>
+            }
+          </Box>
+          <InputComp
+            type="text"
+            placeholder={`Enter option ${String.fromCharCode(65 + index)}`}
+            className="option_input"
+            value={option.text}
+            handleChange={(e) => handleOptionChange(index, "text", e.target.value)}
+          />
+          <br />
+          <Input
+            type="file"
+            className="option_input"
+            onChange={(e) => handleImageChange(index, e)}
+          />
+        </Box>
+      ))}
+      {options.length < MAX_OPTIONS && (
+        <Box className="option_form_btn">
+          <Button 
+            onClick={handleAddOption} 
+            className="add_more_options_btn" 
+            leftIcon={<FiPlus />}>
+            Add Option
+          </Button>
+        </Box>
+      )}
       <ButtonComp
         disable={disable}
         loading={loading}
-        className={"create_question_btn"}
-        disableClassName={"disable_create_question_btn"}
-        text={"Create Question"}
+        className="create_question_btn"
+        disableClassName="disable_create_question_btn"
+        text="Create Question"
         handleClick={handleAskQuestion}
       />
     </Box>

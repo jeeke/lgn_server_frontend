@@ -207,3 +207,116 @@
   max-width: 0px 9px;
   background-color: transparent !important;
 }
+/* .single_option_box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+ */
+ .option_image {
+  width: 90px;
+  height: 50px;
+  border-radius: 5px;
+  margin: 0 5px;
+}
+.single_option_box {
+  display: block !important;
+  margin-bottom: 2px !important; /* Adjust as needed for spacing */
+  border: 1px solid transparent !important;
+  width: fit-content !important;
+  height: fit-content !important;
+}
+
+.option_text {
+  display: block !important; /* Ensures text spans take up the full width */
+}
+
+.option_image {
+  display: block !important; /* Ensures images take up the full width */
+  margin-top: 2px !important; /* Adjust as needed for spacing between text and image */
+}
+.option_header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 9px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.remove_option_btn {
+  background-color: transparent !important;
+  color: crimson !important;
+  font-size: 1rem !important;
+  transition: all 0.1s linear;
+  width: fit-content !important;
+  height: fit-content !important;
+  margin: 0 !important;
+  padding: 12px !important;
+}
+.remove_option_btn:hover {
+  background-color: rgba(220, 20, 60, 0.129) !important;
+}
+.option_form_btn {
+  margin: 7px auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.add_more_options_btn {
+  font-size: 0.85rem !important;
+  font-weight: 400 !important;
+}
+.question_option_list {
+  font-size: 0.85rem !important;
+  font-weight: 400 !important;
+}
+.question_menu_item {
+  display: flex !important;
+  align-items: center !important;
+}
+.question_options_menu_list {
+  height: 45vh !important;
+  overflow: scroll !important;
+}
+.question_option_image {
+  width: 50px;
+  height: 40px;
+  margin-right: 5px;
+}
+.question_option_text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: black !important;
+  /* */
+}
+.line_through {
+  text-decoration:line-through !important;
+  filter: blur(3px);
+  cursor: not-allowed;
+  text-decoration-color: #ff4757 !important;
+
+}
+.selected_question_option_text {
+  color: rgb(56, 155, 91) !important;
+  font-weight: bold;
+}
+.question_info_box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.question_remove_btn {
+  background-color: crimson !important;
+  color: aliceblue !important;
+  width: fit-content !important;
+  height: fit-content !important;
+  margin: 0 !important;
+  padding: 2px !important;
+  border-radius: 50px !important;
+}
+.question_status_menu_item {
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  color: black !important;
+}

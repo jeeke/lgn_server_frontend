@@ -27,8 +27,12 @@ import { useParams } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
 import { FaMinus } from "react-icons/fa6";
 import { TfiInfinite } from "react-icons/tfi";
+import Pusher from 'pusher-js';
+import { FaAngleDown } from "react-icons/fa6";
+import { AiOutlineClose } from "react-icons/ai";
 
 const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
+  // console.log(data)
   const {id} = useParams();
   const toast = useToast();
   useSocket();
@@ -45,16 +49,22 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   const [counter, setCounter] = useState(3);
   const [isInfiniteTime, setIsInfiniteTime] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
+  const [openRemoveOptionModal, setOpenRemoveOptionModal] = useState(false);
+  const [optionId, setOptionId] = useState("");
   
 
   const handleChangestatus = (id, value) => {
-    const containsIsInfinteTrue = questions.some(item => item.isInfinte === true);
+    // const containsIsInfinteTrue = questions.some(item => item.isInfinte === true);
+    // setQuestionId(id);
+    // setupdateValue(value);
+    // setUpdateTimeModal(true);
+    // if (containsIsInfinteTrue) {
+    //   setConfirmModal(true);
+    // }
+    //************************************ */
+    setOpenstatusModal(true);
     setQuestionId(id);
     setupdateValue(value);
-    setUpdateTimeModal(true);
-    if (containsIsInfinteTrue) {
-      setConfirmModal(true);
-    }
   };
 
   const handlechangeOption = () => {
@@ -76,7 +86,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     axios
       .request(config)
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data)
         setStatus(response.data.question.status);
         setOpenstatusModal(false);
         toast({
@@ -87,15 +97,47 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
           isClosable: true,
         });
         setUpdateQuestions(response.data.question)
-        // socket.emit("tournament notification", response.data.question);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  const handlechangeAnswerOption = (value, questionId) => {
+  const handlechangeAnswerOption = (question, option) => {
     let data = JSON.stringify({
+      "optionId": option._id,
+      "tournamentId": question.tourId
+    });
+    
+    let config = {
+      method: 'put',
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-answer/${question._id}`,
+      headers: { 
+        'x-access-token': localStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      console.log(response.data);
+      setUpdateQuestions(response.data.question)
+      setcorrectOption(response.data.question.correctOption);
+      toast({
+        title: "Success.",
+        description: `${response.data.message}`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    
+    /*let data = JSON.stringify({
       "option": value,
       "tournamentId": id
     });
@@ -129,7 +171,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
       })
       .catch((error) => {
         console.log(error);
-      });
+      });*/
   };
 
   const handleOpenDeleteModal = (id) => {
@@ -175,6 +217,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     return () => clearInterval(intervalId);
   }, [timeRemaining, validUntil]);
 
+  /*
   const handleUpdatequestionTime = () => {
     // alert(counter)
     let data = JSON.stringify({
@@ -210,6 +253,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
       console.log(error);
     });
   }
+  */
 
   const handleDecrement = () => {
     if(counter > 1) {
@@ -229,9 +273,63 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     setIsInfiniteTime(event.target.checked);
   };
 
+  /* PUSHER CODE IMPLEMENTATION */
+  useEffect(() => {
+    const pusher = new Pusher(process.env.REACT_APP_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
+      useTLS: true
+    });
+
+    const channel = pusher.subscribe('expire-tournament-question');
+    channel.bind('expire-tournament-question-notification', function(data) {
+      // console.log("#Updated question data",data);
+      // Handle the notification data as needed;
+      if(data.isExpire) {
+        setUpdateQuestions(data);
+      }
+    });
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
+    };
+  }, []);
+
+  const handleRemoveOption = () => {
+    let data = JSON.stringify({
+      "optionId": optionId,
+      "status": "Inactive"
+    });
+    let config = {
+      method: 'put',
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-question-status/${questionId}`,
+      headers: { 
+        'x-access-token': localStorage.getItem("token"), 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      setUpdateQuestions(response.data);
+      setUpdateTimeModal(true)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  const handleOpenCloseOptionModal = (questionId, option) => {
+    setOpenRemoveOptionModal(true);
+    setQuestionId(questionId);
+    setOptionId(option._id);
+  }
+
   return (
     <>
-    {
+      {/* {
         updateTimeModal &&
         <AlertModal 
           isOpen={updateTimeModal}
@@ -260,7 +358,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
             </Button>
           }
         />
-      }
+      } */}
       {
         confirmModal &&
         <AlertModal 
@@ -279,6 +377,26 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
           }
         />
       }
+
+      {
+        openRemoveOptionModal &&
+        <AlertModal 
+          isOpen={openRemoveOptionModal}
+          onClose={() => setOpenRemoveOptionModal(false)}
+          title={"Remove option"}
+          body={
+            <Box className="question_time_modal_body">
+              Do you want to remove this option
+            </Box>
+          }
+          footer={
+            <Button className='modal_btn' onClick={handleRemoveOption}>
+                Remove
+            </Button>
+          }
+        />
+      }
+
       {openStatusModal && (
         <AlertModal
           isOpen={openStatusModal}
@@ -314,29 +432,47 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
       )}
       {!isDelete && (
         <Tr>
+          {/* Question Index */}
           <Td className='td'>{index}</Td>
+
+          {/* Tournament question */}
           <Td className='td'>{data.question}</Td>
-          <Td className='td'>{data.optionA.text}</Td>
-          <Td className='td'>
-            <Img src={data.optionA.image} className='option_image' />
-          </Td>
-          <Td className='td'>{data.optionB.text}</Td>
-          <Td className='td'>
-            <Img src={data.optionB.image} className='option_image' />
-          </Td>
-          <Td className='td'>{data.optionC.text ? data.optionC.text : "NA"}</Td>
+
+          {/* Tournament options */}
           <Td className='td'>
             {
-              data.optionC.image ? <Img src={ data.optionC.image} className='option_image' /> : "NA"
+              (data.options || []).length > 0 ? 
+              <Menu>
+                <MenuButton as={Button} className="question_option_list" rightIcon={<FaAngleDown />}>
+                  Question options
+                </MenuButton>
+                <MenuList className="question_options_menu_list">
+                  {
+                    data.options.map((item, index) => (
+                      <MenuItem
+                        className={item.status === "Inactive" ? 'question_menu_item line_through' : 'question_menu_item'}
+                        >
+                        <Box className="question_info_box">
+                          <Img src={item.image} className="question_option_image" />
+                          <span className={data.correctOption === item._id.toString() ? "question_option_text selected_question_option_text" : "question_option_text"}>
+                            {item.text}
+                          </span>
+                        </Box>
+                        <Button className="question_remove_btn" 
+                          onClick={() => handleOpenCloseOptionModal(data._id, item, index)}
+                        >
+                          <AiOutlineClose />
+                        </Button>
+                      </MenuItem>
+                    ))
+                  }
+                </MenuList>
+              </Menu>
+               : <Box>No option available</Box>
             }
-            
           </Td>
-          <Td className='td'>{data.optionD.text ? data.optionD.text : "NA"}</Td>
-          <Td className='td'>
-          {
-            data.optionD.image ? <Img src={data.optionD.image} className='option_image' /> : "NA"
-          }
-          </Td>
+
+          {/* Question remaing time */}
           <Td className="td">
             {
               data.isInfinte ? <TfiInfinite /> : 
@@ -346,10 +482,11 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
 }
               </>
             }
-          </Td> 
-          {/* <Td className="td">{data.createdAt}</Td> */}
+          </Td>
+
+          {/* Question status */}
           <Td className='td'>
-            {status === "Initialised" ? (
+            {/* {status === "Initialised" ? (
               <Button
                 className={`table_btn active ${status}`}
                 onClick={() => handleChangestatus(data._id, "Active")}>
@@ -359,59 +496,68 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
               <Button className='table_btn active'>
                 {data.status}
               </Button>
-            )}
-          </Td>
-          <Td className='td'>
-            {correctOption.trim() ? (
-              <>{correctOption}</>
-            ) : (
+            )} */}
+            {
+              status === 'Initialised' ? 
               <Menu>
-                <MenuButton
-                  as={Button}
-                  className={
-                    status === "active"
-                      ? `active_btn user`
-                      : "active_btn pending"
-                  }>
-                  {data.correctOption.toUpperCase() || <>Option</>}
+                <MenuButton className={`table_btn active ${status}`} as={Button} rightIcon={<FaAngleDown />}>
+                  {status}
                 </MenuButton>
                 <MenuList>
-                  <MenuItem
-                    className='menu_item'
-                    onClick={() =>
-                      handlechangeAnswerOption("optionA", data._id)
-                    }>
-                    Option A
+                  <MenuItem 
+                    onClick={() => handleChangestatus(data._id, "Active")}
+                    className="question_status_menu_item"
+                  >
+                    Active
                   </MenuItem>
-
-                  <MenuItem
-                    className='menu_item'
-                    onClick={() =>
-                      handlechangeAnswerOption("optionB", data._id)
-                    }>
-                    Option B
+                </MenuList>
+              </Menu> :
+              <Menu>
+                <MenuButton className={`table_btn ${status}`} as={Button} rightIcon={<FaAngleDown />}>
+                  {status}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem 
+                    onClick={() => handleChangestatus(data._id, "Active")}
+                    className="question_status_menu_item"
+                  >
+                    Active
                   </MenuItem>
-
-                  {data.optionC.text && <MenuItem
-                    className='menu_item'
-                    onClick={() =>
-                      handlechangeAnswerOption("optionC", data._id)
-                    }>
-                    Option C
-                  </MenuItem>}
-
-                  {data.optionD.text && <MenuItem
-                    className='menu_item'
-                    onClick={() =>
-                      handlechangeAnswerOption("optionD", data._id)
-                    }>
-                    Option D
-                  </MenuItem>}
+                  <MenuItem 
+                    onClick={() => handleChangestatus(data._id, "Expired")}
+                    className="question_status_menu_item"
+                  >
+                    Expired
+                  </MenuItem>
                 </MenuList>
               </Menu>
-            )}
+            }
           </Td>
 
+          {/* Question correct option */}
+          <Td className='td'>
+          <Menu>
+            <MenuButton as={Button} className="question_option_list" rightIcon={<FaAngleDown />}>
+              Select correct option
+            </MenuButton>
+            <MenuList className="question_options_menu_list">
+              {
+                data.options.map((item, index) => (
+                  <MenuItem
+                    className={item.status === "Inactive" ? 'question_menu_item line_through' : 'question_menu_item'}
+                    onClick={() => handlechangeAnswerOption(data, item)}>
+                      <Img src={item.image} className="question_option_image" />
+                      <span className={data.correctOption === item._id.toString() ? "question_option_text selected_question_option_text" : "question_option_text"}>
+                        {item.text}
+                      </span>
+                  </MenuItem>
+                ))
+              }
+            </MenuList>
+          </Menu>
+          </Td>
+
+          {/* Question Action button */}
           <Td className='td'>
             {
               status === "Initialised"  && <Button
@@ -420,15 +566,6 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
               <AiOutlineDelete />
             </Button>
             }
-
-            {/* {
-              status !== "active" && <Button
-              className='table_delete_btn'
-              onClick={() => handleOpenDeleteModal(data._id)}>
-              <MdAccessTime />
-            </Button>
-            } */}
-
             {
               status === "Initialised" && <Button className='table_edit_btn'>
               <FaRegEdit />
