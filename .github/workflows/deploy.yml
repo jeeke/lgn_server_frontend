@@ -31,7 +31,7 @@ jobs:
       - name: Deploy to EC2
         env:
           EC2_USER: ubuntu
-          EC2_HOST: YOUR_EC2_IP
+          EC2_HOST: ec2-52-66-253-179.ap-south-1.compute.amazonaws.com
           PROJECT_DIR: /home/ubuntu/lgn_server_frontend
           WEB_DIR: /var/www/html/lgnsf
         run: |
