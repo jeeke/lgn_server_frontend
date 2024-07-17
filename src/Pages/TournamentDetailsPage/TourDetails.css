@@ -315,3 +315,8 @@
   padding: 2px !important;
   border-radius: 50px !important;
 }
+.question_status_menu_item {
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  color: black !important;
+}

@@ -1,10 +1,9 @@
 import React,{useState, useEffect, useRef} from 'react'
 import "./MainHeader.css"
-import { Box, Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button, Img
+import { 
+  Box,
+  Button, 
+  Img
 } from '@chakra-ui/react';
 import Logo from "../../Assets/lgn_logo.png";
 import { MdLogout } from "react-icons/md";
@@ -12,13 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import {GlobalContext} from "../../Context/Context";
 import { MdOutlineNotificationsActive } from "react-icons/md";
 import axios from "axios";
-import Loader from '../Loader/Loader';
 import MenuNotification from '../NotificationComp/MenuNotification';
 import Pusher from 'pusher-js';
 
 const MainHeader = () => {
   const navigate = useNavigate();
-  const {notificationsCount,notifications, setNotifications} = GlobalContext();
+  const {notificationsCount,notifications, setNotifications, setNotificationsCount} = GlobalContext();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -73,6 +71,8 @@ const MainHeader = () => {
     channel.bind('admin-notification', function(data) {
       console.log('Received admin notification:', data);
       // Handle the notification data as needed
+      setNotificationsCount(prev => prev +1);
+      // setNotifications(prev => [...data, ...prev])
     });
 
     return () => {
@@ -80,6 +80,11 @@ const MainHeader = () => {
       pusher.unsubscribe('admin-channel'); // Unsubscribe from channel
     };
   }, []);
+
+  const handleOpenNotificationMenu = () => {
+    setOpenNotificationMenu(p => !p);
+    setNotificationsCount(0)
+  }
 
   return (
     <Box className='main_header'>
@@ -89,7 +94,7 @@ const MainHeader = () => {
         <Box className="app_title">LGN Dashboard</Box>
       </Box>
 
-      <Box className='notification_button' onClick={() => setOpenNotificationMenu(p => !p)}>
+      <Box className='notification_button' onClick={() => handleOpenNotificationMenu()}>
         <MdOutlineNotificationsActive />
         {
           notificationsCount> 0 && <span className="notification_indicator"></span>

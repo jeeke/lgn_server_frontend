@@ -54,13 +54,17 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   
 
   const handleChangestatus = (id, value) => {
-    const containsIsInfinteTrue = questions.some(item => item.isInfinte === true);
+    // const containsIsInfinteTrue = questions.some(item => item.isInfinte === true);
+    // setQuestionId(id);
+    // setupdateValue(value);
+    // setUpdateTimeModal(true);
+    // if (containsIsInfinteTrue) {
+    //   setConfirmModal(true);
+    // }
+    //************************************ */
+    setOpenstatusModal(true);
     setQuestionId(id);
     setupdateValue(value);
-    setUpdateTimeModal(true);
-    if (containsIsInfinteTrue) {
-      setConfirmModal(true);
-    }
   };
 
   const handlechangeOption = () => {
@@ -82,7 +86,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        console.log(response.data)
         setStatus(response.data.question.status);
         setOpenstatusModal(false);
         toast({
@@ -213,6 +217,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     return () => clearInterval(intervalId);
   }, [timeRemaining, validUntil]);
 
+  /*
   const handleUpdatequestionTime = () => {
     // alert(counter)
     let data = JSON.stringify({
@@ -248,6 +253,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
       console.log(error);
     });
   }
+  */
 
   const handleDecrement = () => {
     if(counter > 1) {
@@ -480,7 +486,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
 
           {/* Question status */}
           <Td className='td'>
-            {status === "Initialised" ? (
+            {/* {status === "Initialised" ? (
               <Button
                 className={`table_btn active ${status}`}
                 onClick={() => handleChangestatus(data._id, "Active")}>
@@ -488,9 +494,44 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
               </Button>
             ) : (
               <Button className='table_btn active'>
-                {status}
+                {data.status}
               </Button>
-            )}
+            )} */}
+            {
+              status === 'Initialised' ? 
+              <Menu>
+                <MenuButton className={`table_btn active ${status}`} as={Button} rightIcon={<FaAngleDown />}>
+                  {status}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem 
+                    onClick={() => handleChangestatus(data._id, "Active")}
+                    className="question_status_menu_item"
+                  >
+                    Active
+                  </MenuItem>
+                </MenuList>
+              </Menu> :
+              <Menu>
+                <MenuButton className={`table_btn ${status}`} as={Button} rightIcon={<FaAngleDown />}>
+                  {status}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem 
+                    onClick={() => handleChangestatus(data._id, "Active")}
+                    className="question_status_menu_item"
+                  >
+                    Active
+                  </MenuItem>
+                  <MenuItem 
+                    onClick={() => handleChangestatus(data._id, "Expired")}
+                    className="question_status_menu_item"
+                  >
+                    Expired
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            }
           </Td>
 
           {/* Question correct option */}

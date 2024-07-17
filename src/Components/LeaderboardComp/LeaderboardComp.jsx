@@ -1,18 +1,7 @@
 import React from 'react';
 import {
-    Box,
-    Button,
-    Input,
-    Image,
-    Table,
-    Thead,
-    Tbody,
     Tr,
-    Th,
-    TableCaption,
-    TableContainer,
     Td,
-    Spinner,
 } from "@chakra-ui/react";
 
 const LeaderboardComp = ({data, index}) => {
