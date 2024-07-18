@@ -1,0 +1,86 @@
+.profile_loading_container {
+    width: 100%;
+    height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.empty_profile_container {
+    width: 100%;
+    height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: aliceblue;
+    font-size: 0.825rem;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+}
+.profile_container {
+    width: 100%;
+    height: 85vh;
+    overflow: scroll;
+}
+.profile_container::-webkit-scrollbar {
+    display: none;
+}
+.profile_container {
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+.profile_info_ {
+    padding: 12px;
+}
+.section_header {
+    width: 100%;
+    padding: 9px;
+    font-size: 1.05rem;
+    font-weight: bolder;
+    color: aliceblue;
+}
+.profile_info_box {
+    border-top: 1px solid rgba(240, 248, 255, 0.307);
+    border-bottom: 1px solid rgba(240, 248, 255, 0.307);
+    padding: 9px;
+    display: flex;
+    align-items: center;
+}
+.profile_info {
+    width: 100%;
+}
+.profile_info_title {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: rgba(240, 248, 255, 0.304);
+}
+.profile_info_data {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: aliceblue;
+}
+.active_text {
+    color: #88D66C;
+    font-weight: bold;
+}
+.inactive_text {
+    color: crimson;
+    font-weight: bold;
+}
+.streamer {
+    color: #88D66C;
+    font-weight: bold;
+}
+.streamer_text {
+    color: #667BC6;
+    font-weight: bold;
+}
+.profile_other_section {
+    width: 100%;
+    padding: 9px;
+    margin: 7px 0;
+}
+.profile_table_header {
+    font-weight: bold !important;
+    font-size: 0.85rem !important;
+    color: rgba(240, 248, 255, 0.464) !important;
+}

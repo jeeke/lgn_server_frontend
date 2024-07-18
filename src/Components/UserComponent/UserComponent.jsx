@@ -24,8 +24,11 @@ import AlertModal from "../modalComp/AlertModal";
 import InputComp from "../InputComp/InputComp";
 import axios from "axios";
 import { useSocket, socket } from "../../socket/socket";
+import { FaUserLarge } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 const UserComponent = ({ data, index }) => {
+  const navigate = useNavigate()
   const toast = useToast();
   const [active, setActive] = useState(data.status || "active");
   const [accountType, setAccountType] = useState(data.accountType || "user");
@@ -300,6 +303,13 @@ const UserComponent = ({ data, index }) => {
                 className='table_delete_btn'
                 onClick={() => handleProfileDeleteModal(data._id)}>
                 <AiOutlineDelete />
+              </Button>
+
+              <Button
+                className='table_view_profile_btn'
+                onClick={() => navigate(`/profile/${data._id}`)}
+              >
+                <FaUserLarge />
               </Button>
             </Td>
           </Tr>
