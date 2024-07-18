@@ -7,6 +7,7 @@ import ProtectedRoute from "./Authentication/ProtectRoute";
 import Register from "./Pages/Register/Register";
 import Login from "./Pages/Login/Login";
 import Home from "./Pages/Home/Home";
+import Profile from "./Pages/Profile/Profile"
 import BannerManagement from "./Pages/BannerManagement/BannerManagement";
 import UserManagement from "./Pages/UserManagement/UserManagement";
 import TournamentPage from "./Pages/TournamentManagement/TournamentPage.jsx";
@@ -140,6 +141,17 @@ function App() {
           }
         >
         </Route>
+
+        {/* Profile page */}
+        <Route
+          path={`/profile/:id`}
+          exact
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Create Banner page */}
         <Route
