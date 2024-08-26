@@ -15,7 +15,7 @@ import TourDetails from "./Pages/TournamentDetailsPage/TourDetails";
 import Notification from "./Pages/Notification/Notification";
 import SupportPage from "./Pages/SupportPage/SupportPage";
 import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage";
-import { useSocket, socket } from "./socket/socket";
+
 
 import Pusher from 'pusher-js';
 import { GlobalContext } from "./Context/Context";
@@ -23,7 +23,6 @@ import { GlobalContext } from "./Context/Context";
 
 function App() {
   const {setNotifications, setNotificationsCount} = GlobalContext()
-  // useSocket();
 
   useEffect(() => {
     // Initialize Pusher

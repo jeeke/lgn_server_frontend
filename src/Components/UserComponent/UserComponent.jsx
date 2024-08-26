@@ -23,7 +23,6 @@ import { FaRegEdit } from "react-icons/fa";
 import AlertModal from "../modalComp/AlertModal";
 import InputComp from "../InputComp/InputComp";
 import axios from "axios";
-import { useSocket, socket } from "../../socket/socket";
 import { FaUserLarge } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
@@ -40,7 +39,6 @@ const UserComponent = ({ data, index }) => {
   const [message, setMessage] = useState("");
   const [profileId, setProfileId] = useState("");
   const [statusValue, setStatusValue] = useState("");
-  useSocket();
 
   /* Handle Open activity status modal */
   const handleOpenActivityModal = (value, id) => {
@@ -79,10 +77,7 @@ const UserComponent = ({ data, index }) => {
           duration: 9000,
           isClosable: true,
         });
-        /* From here we'll send notification to user */
-        if (response.data.notification) {
-          socket.emit("notification send", response.data.notification);
-        }
+        
       })
       .catch((error) => {
         console.log(error);
@@ -127,10 +122,7 @@ const UserComponent = ({ data, index }) => {
           duration: 9000,
           isClosable: true,
         });
-        /* Send notification to user */
-        if (response.data.notification) {
-          socket.emit("notification send", response.data.notification);
-        }
+        
       })
       .catch((error) => {
         console.log(error);
@@ -168,10 +160,7 @@ const UserComponent = ({ data, index }) => {
           duration: 9000,
           isClosable: true,
         });
-        /* From here we'll send notification to user */
-        if (response.data.notification) {
-          socket.emit("notification send", response.data.notification);
-        }
+        
       })
       .catch((error) => {
         console.log(error);

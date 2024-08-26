@@ -115,11 +115,11 @@ const Profile = () => {
                             {/* Profile stream section */}
                             <StreamSection id={id} />
 
-                            {/* Profile prediction */}
-                            {/* <PredictionSection id={id} /> */}
-
                             {/* Profile Wallet */}
                             <WalletSection id={id} />
+                            
+                            {/* Profile prediction */}
+                            {/* <PredictionSection id={id} /> */}
                         </Box> :
                         <Box className='empty_profile_container'>No user data found</Box>
                     }

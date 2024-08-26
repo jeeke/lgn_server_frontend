@@ -7,18 +7,10 @@ import { MdKeyboardBackspace } from "react-icons/md";
 import {
   Box,
   Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  TableCaption,
-  TableContainer,
   Input,
   Image,
   Img,
-  Td,
-  Spinner,
+  useToast
 } from "@chakra-ui/react";
 import "./TournamentPage.css";
 import FullModal from "../../Components/modalComp/FullModal";
@@ -37,6 +29,7 @@ import SearchTournament from "./SearchTournament";
 import { GlobalContext } from "../../Context/Context";
 
 const TournamentPage = () => {
+  const toast = useToast();
   const {setPageType} = GlobalContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,6 +57,8 @@ const TournamentPage = () => {
   const [searchTitle, setSearchTitle] = useState("");
   const [searchtournamentsList, setSearchTournamentsList] = useState([]);
   const [updateTournament, setUpdateTournament] = useState(null);
+
+  const [stepperCount, setStepperCount] = useState(1)
 
   useLayoutEffect(() => {
     setPageType("Tournament")
@@ -173,8 +168,16 @@ const TournamentPage = () => {
         setSelectUser("");
         settournament_by("");
         setuserId("");
+        setUsers([])
         setLoading(false);
         setOpenCreateModal(false);
+        toast({
+          title: "Success",
+          description: "You successfully created a new stream.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       })
       .catch((error) => {
         setTime("");
@@ -187,7 +190,15 @@ const TournamentPage = () => {
         settournament_by("");
         setuserId("");
         setLoading(false);
+        setUsers([])
         setOpenCreateModal(false);
+        toast({
+          title: "Error",
+          description: "something went wrong.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       });
   };
 
@@ -256,13 +267,12 @@ const TournamentPage = () => {
   return (
     <Layout>
       {/* Create a new stream */}
-      <FullModal
+       <FullModal
         isOpen={openCreateModal}
         onClose={handleCloseCreateBannerModal}
         title={<Box className='banner_create_title'>Create new banner</Box>}
         body={
           <Box className='create_tour_body'>
-            {/* Title */}
             <Inputcomp
               type='text'
               placeholder='Stream title'
@@ -270,7 +280,6 @@ const TournamentPage = () => {
               value={title}
               handleChange={(e) => setTitle(e.target.value)}
             />
-            {/* Title */}
             <Inputcomp
               type='text'
               placeholder='Stream description'
@@ -278,7 +287,6 @@ const TournamentPage = () => {
               value={description}
               handleChange={(e) => setDescription(e.target.value)}
             />
-            {/* Link */}
             <Inputcomp
               type='text'
               placeholder='provide Stream link'
@@ -286,7 +294,6 @@ const TournamentPage = () => {
               value={link}
               handleChange={(e) => setLink(e.target.value)}
             />
-            {/* Date */}
             <Inputcomp
               type='date'
               placeholder='provide Streaming date'
@@ -294,7 +301,6 @@ const TournamentPage = () => {
               value={date}
               handleChange={(e) => setDate(e.target.value)}
             />
-            {/* time */}
             <Inputcomp
               type='time'
               placeholder='provide Streaming time'
@@ -322,14 +328,11 @@ const TournamentPage = () => {
                 />
               </Box>
             )}
-
-            {/* Search User */}
             <Box className='user_section_section'>
               {selectUser && (
                 <Box
                   className='select_user_section'
                   onClick={() => setSelectUser("")}>
-                  {/* <Img src={selectUser.profile_img || Avatar} className="select_user_avatar" /> */}
                   <span className='select_user_name'>{selectUser.name}</span>
                   <IoMdClose className='cancel_icon' />
                 </Box>
@@ -373,7 +376,7 @@ const TournamentPage = () => {
             />
           </Box>
         }
-      />
+      /> 
 
       <Box className='banner_page_container'>
         {/* Header Section */}
