@@ -3,12 +3,12 @@ import { Box, useToast } from '@chakra-ui/react';
 import "./SideNavbar.css";
 import { GoHome } from "react-icons/go";
 import { PiFlagBannerFill } from "react-icons/pi";
-import { FaUser } from "react-icons/fa";
-import { FaTrophy } from "react-icons/fa";
-import { FaBell } from "react-icons/fa";
+import { FaBell, FaGift, FaTrophy, FaUser } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { useNavigate, NavLink } from "react-router-dom";
+import { BsCameraReels } from "react-icons/bs";
 import {GlobalContext} from "../../Context/Context";
+
 
 const SideNavbar = () => {  
   const toast = useToast()
@@ -78,7 +78,7 @@ const SideNavbar = () => {
             <Box className='navitem_name'>{notificationsCount> 0 && notificationsCount}</Box>
       </NavLink>
 
-      {/* Notificatin management */}
+      {/* Support management */}
       <NavLink
             to='/support'
             className={(navData) =>
@@ -88,6 +88,30 @@ const SideNavbar = () => {
             }>
             <BiSupport className='navitem_icon' />
             <Box className='navitem_name'>Support Tickets</Box>
+      </NavLink>
+
+      {/* Store management */}
+      <NavLink
+            to='/store'
+            className={(navData) =>
+              navData.isActive
+                ? `navitem active_navitem`
+                : `navitem`
+            }>
+            <BiSupport className='navitem_icon' />
+            <Box className='navitem_name'>Store</Box>
+      </NavLink>
+
+      {/* Reels management */}
+      <NavLink
+            to='/reels'
+            className={(navData) =>
+              navData.isActive
+                ? `navitem active_navitem`
+                : `navitem`
+            }>
+            <BsCameraReels className='navitem_icon' />
+            <Box className='navitem_name'>Reels</Box>
       </NavLink>
     </Box>
   )

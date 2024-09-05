@@ -1,0 +1,59 @@
+.reels_component {
+    border: 1px solid rgba(235, 233, 233, 0.497);
+    max-width: calc(25% - 10px);
+    width: 100%;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+    color: aliceblue;
+    max-height: 285px;
+    height: 100%;
+    position: relative;
+  }
+
+.video {
+    width: 100%;
+    border-radius: 5px;
+}
+.reels_title {
+    font-size: 1.15rem;
+    font-weight: 500;
+}
+.game_tag {
+    width: fit-content;
+    height: fit-content;
+    border-radius: 20px;
+    padding: 3px 9px;
+    background-color: royalblue;
+    color: aliceblue;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.reels_like {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.likes_count {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-left: 3px;
+}
+.likes_icon {
+    font-size: 0.875rem;
+    color: crimson;
+}
+.reels_menu_btn {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    background-color: rgba(240, 248, 255, 0.459) !important;
+    z-index:  1 !important;
+}
+.menu_item {
+    font-weight: 400 !important;
+    font-size: 0.825rem;
+}
+.delete_text {
+    color: crimson !important;
+}
