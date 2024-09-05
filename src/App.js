@@ -15,7 +15,9 @@ import TourDetails from "./Pages/TournamentDetailsPage/TourDetails";
 import Notification from "./Pages/Notification/Notification";
 import SupportPage from "./Pages/SupportPage/SupportPage";
 import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage";
-import { useSocket, socket } from "./socket/socket";
+import Store from "./Pages/Store/Store.jsx";
+import VideoPage from "./Pages/VideoPages/VideoPage.jsx";
+
 
 import Pusher from 'pusher-js';
 import { GlobalContext } from "./Context/Context";
@@ -23,7 +25,6 @@ import { GlobalContext } from "./Context/Context";
 
 function App() {
   const {setNotifications, setNotificationsCount} = GlobalContext()
-  // useSocket();
 
   useEffect(() => {
     // Initialize Pusher
@@ -142,13 +143,24 @@ function App() {
         >
         </Route>
 
-        {/* Profile page */}
+        {/* Store page */}
         <Route
-          path={`/profile/:id`}
+          path={`/store`}
           exact
           element={
             <ProtectedRoute>
-              <Profile />
+              <Store />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Reels page */}
+        <Route
+          path={`/reels`}
+          exact
+          element={
+            <ProtectedRoute>
+              <VideoPage />
             </ProtectedRoute>
           }
         />

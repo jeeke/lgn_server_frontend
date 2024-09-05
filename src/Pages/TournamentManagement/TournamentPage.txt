@@ -10,10 +10,7 @@ import {
   Input,
   Image,
   Img,
-  useToast,
-  FormControl, 
-  FormLabel,
-  Stack
+  useToast
 } from "@chakra-ui/react";
 import "./TournamentPage.css";
 import FullModal from "../../Components/modalComp/FullModal";
@@ -30,8 +27,6 @@ import InputComp from "../../Components/InputComp/InputComp";
 import ListTournament from "./ListTournament";
 import SearchTournament from "./SearchTournament";
 import { GlobalContext } from "../../Context/Context";
-import { FaCheck } from "react-icons/fa6";
-import { FaRegTrashAlt } from "react-icons/fa";
 
 const TournamentPage = () => {
   const toast = useToast();
@@ -62,10 +57,8 @@ const TournamentPage = () => {
   const [searchTitle, setSearchTitle] = useState("");
   const [searchtournamentsList, setSearchTournamentsList] = useState([]);
   const [updateTournament, setUpdateTournament] = useState(null);
-  const [currentStep, setCurrentStep] = useState(1)
-  const [userLoading, setUserLoading] = useState(false)
-  const [stepperCount, setStepperCount] = useState(1);
-  const [forms, setForms] = useState([{ position: '', name: '', image: '' }]);
+
+  const [stepperCount, setStepperCount] = useState(1)
 
   useLayoutEffect(() => {
     setPageType("Tournament")
@@ -89,7 +82,6 @@ const TournamentPage = () => {
   };
 
   useEffect(() => {
-    setUserLoading(true)
     let data = JSON.stringify({
       name: name,
       email: "",
@@ -110,11 +102,9 @@ const TournamentPage = () => {
       .request(config)
       .then((response) => {
         setUsers(response.data.users);
-        setUserLoading(false);
       })
       .catch((error) => {
         console.log(error);
-        setUserLoading(false);
       });
   }, [name]);
 
@@ -122,7 +112,7 @@ const TournamentPage = () => {
     setuserId(data._id);
     settournament_by(data.name);
     setSelectUser(data);
-    // setUsers([]);
+    setUsers([]);
     setName("");
   };
 
@@ -274,246 +264,116 @@ const TournamentPage = () => {
     setSearchTitle(e.target.value)
   }
 
-  const stepperIndicator = [
-    {id: 1, title: "Basic Information"},
-    {id: 2, title: "Select streamer"},
-    {id: 3, title: "Create leaderboard gift"},
-  ];
-
-
-  const handleAddForm = () => {
-    setForms([...forms, { position: '', name: '', image: '' }]);
-  };
-
-  const handleChange = (index, e) => {
-    const newForms = [...forms];
-    newForms[index][e.target.name] = e.target.value;
-    setForms(newForms);
-  };
-
-  const handleGiftImageChange = (index, e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const newForms = [...forms];
-      newForms[index].image = reader.result;
-      setForms(newForms);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveForm = (index) => {
-    const newForms = forms.filter((_, i) => i !== index);
-    setForms(newForms);
-  };
-
   return (
     <Layout>
       {/* Create a new stream */}
        <FullModal
         isOpen={openCreateModal}
         onClose={handleCloseCreateBannerModal}
-        title={<Box className='banner_create_title'>Create new tournament</Box>}
+        title={<Box className='banner_create_title'>Create new banner</Box>}
         body={
           <Box className='create_tour_body'>
-            <Box className="stepper_form_section">
-              {
-                stepperIndicator.map(data => (
-                  <Box key={data.id} className="stepper_box">
-                    {
-                      currentStep < data.id ? <Box className="stepper_position">{data.id}</Box> :
-                      <Box className="stepper_position complete_step">
-                        <FaCheck className="tick_stepper" />
-                      </Box>
-                    }
-                    <Box className="stepper_name">{data.title}</Box>
-                  </Box>
-                ))
-              }
-              <Box className="stepper_indicator" style={{ width: `${(currentStep-1)*40}%`}}></Box>
-            </Box>
-            
-            {
-              currentStep === 1 ? <>
-              <Inputcomp
-                type='text'
-                placeholder='Stream title'
-                className='banner_input'
-                value={title}
-                handleChange={(e) => setTitle(e.target.value)}
-              />
-              <Inputcomp
-                type='text'
-                placeholder='Stream description'
-                className='banner_input'
-                value={description}
-                handleChange={(e) => setDescription(e.target.value)}
-              />
-              <Inputcomp
-                type='text'
-                placeholder='provide Stream link'
-                className='banner_input'
-                value={link}
-                handleChange={(e) => setLink(e.target.value)}
-              />
-              {
-                link &&
-                <iframe
-                  title="YouTube video player"
-                  src={link}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+            <Inputcomp
+              type='text'
+              placeholder='Stream title'
+              className='banner_input'
+              value={title}
+              handleChange={(e) => setTitle(e.target.value)}
+            />
+            <Inputcomp
+              type='text'
+              placeholder='Stream description'
+              className='banner_input'
+              value={description}
+              handleChange={(e) => setDescription(e.target.value)}
+            />
+            <Inputcomp
+              type='text'
+              placeholder='provide Stream link'
+              className='banner_input'
+              value={link}
+              handleChange={(e) => setLink(e.target.value)}
+            />
+            <Inputcomp
+              type='date'
+              placeholder='provide Streaming date'
+              className='banner_input'
+              value={date}
+              handleChange={(e) => setDate(e.target.value)}
+            />
+            <Inputcomp
+              type='time'
+              placeholder='provide Streaming time'
+              className='banner_input'
+              value={time}
+              handleChange={(e) => setTime(e.target.value)}
+            />
+            {prevImage ? (
+              <Box className='banner_image_preview_setion'>
+                <Image src={prevImage} className='preview_image' />
+                <Button className='close_prev_btn' onClick={handleCloseImage}>
+                  <MdClose />
+                </Button>
+              </Box>
+            ) : (
+              <Box className='banner_image_section'>
+                <label htmlFor='banner_image'>
+                  <FiUpload className='banner_file_icon' />
+                </label>
+                <Input
+                  type='file'
+                  id='banner_image'
+                  className='file_input'
+                  onChange={(e) => handleImageChange(e)}
                 />
-              }
+              </Box>
+            )}
+            <Box className='user_section_section'>
+              {selectUser && (
+                <Box
+                  className='select_user_section'
+                  onClick={() => setSelectUser("")}>
+                  <span className='select_user_name'>{selectUser.name}</span>
+                  <IoMdClose className='cancel_icon' />
+                </Box>
+              )}
               <Inputcomp
-                type='date'
-                placeholder='provide Streaming date'
+                type='test'
+                placeholder='Search user...'
                 className='banner_input'
-                value={date}
-                handleChange={(e) => setDate(e.target.value)}
+                value={name}
+                handleChange={(e) => setName(e.target.value)}
               />
-              <Inputcomp
-                type='time'
-                placeholder='provide Streaming time'
-                className='banner_input'
-                value={time}
-                handleChange={(e) => setTime(e.target.value)}
-              />
-              {
-                  prevImage ? (
-                  <Box className='banner_image_preview_setion'>
-                    <Image src={prevImage} className='preview_image' />
-                    <Button className='close_prev_btn' onClick={handleCloseImage}>
-                      <MdClose />
-                    </Button>
-                  </Box>
-                ) : (
-                  <Box className='banner_image_section'>
-                    <label htmlFor='banner_image'>
-                      <FiUpload className='banner_file_icon' />
-                    </label>
-                    <Input
-                      type='file'
-                      id='banner_image'
-                      className='file_input'
-                      onChange={(e) => handleImageChange(e)}
-                    />
-                  </Box>
-                )}
-              </> : 
-              <>
-              {
-                currentStep === 2 ? 
-                <>
-                  {/* Select User */}
-                  {selectUser && (
+              {(users || []).length > 0 ? (
+                <Box className='user_list_section'>
+                  {users.map((data) => (
                     <Box
-                      className='select_user_section'
-                      onClick={() => setSelectUser("")}>
-                      <span className='select_user_name'>{selectUser.name}</span>
-                      <IoMdClose className='cancel_icon' />
+                      key={data._id}
+                      className='user_card'
+                      data={data._id}
+                      onClick={() => handleAddUser(data)}>
+                      <Img
+                        src={selectUser.profile_img || Avatar}
+                        className='user_avatar'
+                      />
+                      <span className='user_name'>{data.name}</span>
                     </Box>
-                  )}
-                  {/* Search input form */}
-                  <Inputcomp
-                    type='text'
-                    placeholder='Search user...'
-                    className='banner_input'
-                    value={name}
-                    handleChange={(e) => setName(e.target.value)}
-                  />
-                  {/* Rendering user list */}
-                  <Box className="modal_search_list">
-                    {
-                      userLoading ? <Box className="modal_search_loading">
-                        <Loader />
-                      </Box> : 
-                      <>
-                      {(users || []).length > 0 ? (
-                        <Box className='user_list_section'>
-                          {users.map((data) => (
-                          <Box
-                            key={data._id}
-                            className='user_card'
-                            data={data._id}
-                            onClick={() => handleAddUser(data)}>
-                              <Img
-                                src={selectUser.profile_img || Avatar}
-                                className='user_avatar'
-                              />
-                              <span className='user_name'>{data.name}</span>
-                          </Box>
                   ))}
                 </Box>
-              ) : null}</>
-                    }
-                  </Box>
-                </> : 
-                <Box className="form_groups_container">
-                  {forms.map((form, index) => (
-                    <Box key={index} className="form_group">
-                      <Box className="form_control">
-                        <Input
-                          name="position"
-                          placeholder="Select leaderboard position"
-                          className='banner_input'
-                          value={form.position}
-                          onChange={(e) => handleChange(index, e)}
-                        />
-                      </Box>
-
-                      <Box className="form_control">
-                        <Input
-                          name="name"
-                          placeholder="Enter gift title"
-                          className='banner_input'
-                          value={form.name}
-                          onChange={(e) => handleChange(index, e)}
-                        />
-                      </Box>
-
-                      <Box className="form_control">
-                        <Input
-                          type="file"
-                          className='banner_input'
-                          placeholder="Gift Image"
-                          accept="image/*"
-                          onChange={(e) => handleGiftImageChange(index, e)}
-                        />
-                      </Box>
-                      {forms.length > 1 && (
-                        <Button
-                          className="remove_btn"
-                            onClick={() => handleRemoveForm(index)}>
-                              <FaRegTrashAlt />
-                            </Button>
-                        )}
-                    </Box>
-                    ))}
-                     <Box className="add_more_btn_container">
-                      <Button className="add_more_modal_btn" onClick={handleAddForm}>Add More</Button>
-                     </Box>
-                </Box>
-              }
-              </>
-            }
+              ) : null}
+            </Box>
           </Box>
         }
         footer={
           <Box className='create_banner_footer'>
-            {
-              currentStep === 3 ? <ButtonComp
+            <ButtonComp
               loading={loading}
               disable={disable}
               className='banner_create_btn'
               disableClassName='disable_banner_create_btn'
               text='Save'
               handleClick={handleCreateTournament}
-            /> : <Button className="modal_btn" onClick={() => setCurrentStep(prev => prev + 1)}>Next</Button>
-            }
+            />
           </Box>
         }
       /> 

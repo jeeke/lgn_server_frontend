@@ -1,0 +1,224 @@
+/** @format */
+
+.store_container {
+  width: 100%;
+  height: 85vh;
+}
+.empty_store_page {
+  width: 100%;
+  height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: aliceblue;
+}
+.store_header {
+  border-bottom: 1px solid rgba(240, 240, 240, 0.142);
+  padding: 7px;
+  height: 15vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.store_header_title {
+  /* width: 100%; */
+  font-size: 0.975rem;
+  font-weight: 500;
+  color: rgba(240, 248, 255, 0.554);
+}
+.header_search_input {
+  font-size: 0.825rem !important;
+  font-weight: 400 !important;
+  width: 450px !important;
+  color: aliceblue !important;
+}
+.create_new_store_button {
+  background-color: var(--primary-button-color) !important;
+  font-weight: 400 !important;
+  font-size: 0.85rem !important;
+  color: aliceblue !important;
+}
+.store_loader_container {
+  width: 100%;
+  height: 69.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.store_managent_box {
+  width: 100%;
+  height: 69.5vh;
+  overflow: scroll;
+}
+.store_managent_box::-webkit-scrollbar {
+  display: none;
+}
+.store_managent_box {
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.store_modal_body {
+  /* border: 1px solid red; */
+  width: 100%;
+  height: 52vh;
+  overflow: scroll;
+  padding: 3px;
+}
+.store_modal_body::-webkit-scrollbar {
+  display: none;
+}
+.store_modal_body {
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.store_modal_footer {
+  width: 100%;
+}
+.modal_footer_store_button {
+  width: 100% !important;
+  height: 33px !important;
+  font-size: 0.85rem !important;
+  font-weight: 400 !important;
+  color: aliceblue !important;
+  background-color: var(--normal-button-color) !important;
+  border-radius: 20px !important;
+}
+.store_input {
+  width: 100% !important;
+  height: 33px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  margin: 5px 0;
+}
+.amount_form {
+  width: 100% !important;
+  height: 33px !important;
+  display: flex;
+  align-items: center;
+}
+.currency_menu_btn {
+  width: 150px !important;
+  height: 33px !important;
+  font-weight: 400 !important;
+  font-size: 0.9rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+/* .down_icon {
+    margin-left: 4px;
+} */
+.currency_menu_item {
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+}
+.upload_image_container {
+  border: 1.8px dotted rgb(198, 199, 200);
+  border-radius: 5px;
+  width: 100%;
+  height: 26vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.05rem;
+}
+.preview_image_container {
+  border-radius: 5px;
+  width: 100%;
+  height: 30vh;
+  position: relative !important;
+}
+.coupon_preview_image {
+  border-radius: 5px;
+  width: 100%;
+  height: 30vh;
+}
+.close_btn {
+  position: absolute !important;
+  top: 0px !important;
+  right: 0px !important;
+}
+.disable_btn {
+  background-color: rgb(132, 159, 239) !important;
+  cursor: no-drop !important;
+}
+.store_component {
+  border: 1px solid rgba(235, 233, 233, 0.497);
+  max-width: calc(25% - 10px);
+  width: 100%;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+  color: aliceblue;
+  max-height: 285px;
+  height: 100%;
+  position: relative;
+}
+.coupon_image {
+  width: 100%;
+  height: 25vh;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+.coupon_title {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.coupon_amount,
+.coupon_amount {
+  font-size: 0.825rem;
+  font-weight: 400;
+  margin-top: 3px;
+}
+.currency_type {
+  font-weight: 500;
+}
+.render_coupons_component {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 70vh;
+  overflow: scroll;
+}
+.render_coupons_component::-webkit-scrollbar {
+  display: none;
+}
+.render_coupons_component {
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.coupon_menu_btn {
+  position: absolute !important;
+  top: 0px !important;
+  right: 0px !important;
+  z-index: 2 !important;
+  background-color: rgba(240, 248, 255, 0.3) !important;
+}
+.coupon_menu_item {
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+  color: black !important;
+}
+.delete_menu {
+  color: crimson !important;
+}
+.delete_item {
+  border: 2px solid crimson;
+}
+.couipon_menu_btn {
+  margin: 5px 0 !important;
+  font-weight: 500 !important;
+  font-size: 1.05rem !important;
+}
+.coupon_menu_item {
+  font-size: 0.85rem !important;
+  font-weight: 400 !important;
+}
+.select_box {
+  margin: 7px 0 !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+}

@@ -18,12 +18,10 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import QuestionComp from "../../Components/QuestionComp/QuestionComp";
-import { useSocket, socket } from "../../socket/socket";
 import Loader from "../../Components/Loader/Loader";
 import {GlobalContext} from "../../Context/Context"
 
 const QuestionList = ({ id }) => {
-  useSocket();
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [page, setPage] = useState(1);
@@ -62,12 +60,6 @@ const QuestionList = ({ id }) => {
         console.log(error);
       });
   }, [id, updatequestions, page]);
-
-  useEffect(() => {
-    socket.on("message", (data) => {
-      console.log(">>>>>>>>>>>>>>>>>>>", data);
-    });
-  });
 
   const handleIncrementPage = () => {
     setLoadPageBtn(true);

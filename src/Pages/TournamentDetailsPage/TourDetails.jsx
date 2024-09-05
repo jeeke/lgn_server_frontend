@@ -25,7 +25,6 @@ import TournamentImage from "../../Assets/image.png";
 import QuestionForm from "./QuestionForm";
 import QuestionList from "./QuestionList";
 import Leaderboard from "./Leaderboard";
-import { useSocket, socket } from "../../socket/socket.js";
 import {GlobalContext} from "../../Context/Context";
 import Pusher from "pusher-js"
 
@@ -36,7 +35,6 @@ const TourDetails = () => {
   const [tournamentDetails, setturnamentDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [select, setSelect] = useState("one");
-  useSocket();
 
   useLayoutEffect(() => {
     setPageType("tournament_details__")
@@ -58,7 +56,6 @@ const TourDetails = () => {
         // console.log(response.data)
         setturnamentDetails(response.data.result);
         setLoading(false);
-        socket.emit("join room", response.data.result);
       })
       .catch((error) => {
         console.log(error);

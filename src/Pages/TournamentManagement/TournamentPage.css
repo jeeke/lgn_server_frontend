@@ -17,12 +17,6 @@
 }
 .user_list_section {
     width: 100%;
-    height: 35vh;
-    overflow: auto;
-    position: absolute;
-    left: 0;
-    top: 45px;
-    z-index: 10;
     background-color: white;
 }
 .user_card {
@@ -86,4 +80,159 @@
     overflow: scroll;
     overflow-y: none;
     overflow-x: none;
+}
+.create_tournamnet_body {
+    border: 1px solid red;
+    width: 100%;
+    height: 70vh;
+}
+.stepper_indicator {
+    height: 10px;
+    background-color: crimson;
+    position: absolute;
+    top: 30%;
+    left: 5%;
+    z-index: -2;
+}
+.form_stepper_section {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 2;
+    position: relative;
+}
+.step_wrapper {
+    text-align: center;
+    width: fit-content;
+    height: fit-content;
+    background-color: white;
+}
+.step_count {
+    font-size: 1.05rem;
+    font-weight: bolder;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid crimson;
+}
+.active_step_count {
+    color: aliceblue;
+    background-color: crimson;
+}
+.step_title {
+    font-size: 0.825rem;
+    font-weight: bold;
+}
+.stepper_form_section {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+.stepper_box {
+    width: fit-content;
+    height: fit-content;
+    text-align: center;
+    position: relative;
+    background-color: transparent;
+}
+.stepper_position {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border: 1.5px solid royalblue;
+    color: royalblue;
+    border-radius: 50%;
+    margin: 0 auto;
+    z-index: 2;
+    background-color: white;
+    
+}
+.stepper_name {
+    font-size: 0.825rem;
+    font-weight: 500;
+}
+.stepper_indicator {
+    width: 80%;
+    height: 10px;
+    position: absolute;
+    left: 10%;
+    top: 35%;
+    transform: translate(-10px, -50%);
+    background-color: royalblue;
+}
+.stepper_form_box {
+    width: 100%;
+    height: 38vh;
+    overflow: auto;
+}
+.tick_stepper {
+    color: aliceblue;
+}
+.complete_step {
+    background-color: royalblue;
+}
+.modal_search_list {
+    border: 1px solid red;
+    width: 100%;
+    height: 31vh;
+    overflow: auto;
+}
+.modal_search_loading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.form_groups_container {
+    width: 100%;
+    height: 100%;
+}
+.form_label {
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+}
+.form_control {
+    width: 100%;
+    height: auto;
+    margin: 5px;
+}
+.form_group {
+    border: 1px solid rgb(227, 227, 227);
+    margin: 7px 0;
+    padding: 5px;
+    border-radius: 5px;
+}
+.remove_btn {
+    background-color: #f44336 !important;
+    color: aliceblue !important;
+    font-size: 0.85rem !important;
+    padding: 5px !important;
+    width: fit-content !important;
+    height: fit-content !important;
+}
+.add_more_btn_container {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.add_more_modal_btn {
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+    /* width: fit-content !important;
+    height: fit-content !important; */
+    color: black !important;
 }

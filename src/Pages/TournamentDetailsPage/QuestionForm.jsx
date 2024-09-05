@@ -93,7 +93,8 @@ const QuestionForm = ({ id }) => {
 
   const handleUpdatequestionTime = () => {
     let data = JSON.stringify({
-      "time": isInfiniteTime ? null : counter
+      "isInfiniteTime": isInfiniteTime,
+      "time": counter
     });
     
     let config = {
@@ -110,6 +111,7 @@ const QuestionForm = ({ id }) => {
     axios.request(config)
     .then((response) => {
       console.log((response.data));
+      setUpdateTimeModal(false)
     })
     .catch((error) => {
       console.log(error);
@@ -161,6 +163,7 @@ const QuestionForm = ({ id }) => {
           setOptions([{ text: "", image: "" }, { text: "", image: "" }]);
           setLoading(false);
           setQuestionId(result.question._id);
+          setUpdateTimeModal(true)
         }
       })
       .catch((error) => console.error(error));

@@ -32,8 +32,8 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(3);
-  const [count, setCount] = useState(3);
+  const [limit, setLimit] = useState(10);
+  const [count, setCount] = useState(10);
   const [loadPageBtn, setLoadPageBtn] = useState(false);
 
   useLayoutEffect(() => {

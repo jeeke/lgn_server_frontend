@@ -19,7 +19,6 @@ import axios from "axios";
 import AlertModal from "../modalComp/AlertModal";
 import TourImage from "../../Assets/image.png";
 import { useNavigate } from "react-router-dom";
-import { useSocket, socket } from "../../socket/socket";
 import { FaEdit } from "react-icons/fa";
 import FullModal from "../modalComp/FullModal";
 import ButtonComp from "../ButtonComp/AuthButton"
@@ -30,7 +29,6 @@ import {FiUpload} from "react-icons/fi"
 const TournamentsComp = ({ data, index, setUpdateTournament }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  useSocket();
   const [isDelete, setIsDelete] = useState(data.is_deleted || false);
   const [tournamentId, setTournamentId] = useState("");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -81,9 +79,6 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
           duration: 9000,
           isClosable: true,
         });
-        if (response.data.notification) {
-          socket.emit("notification send", response.data.notification);
-        }
       })
       .catch((error) => {
         console.log(error);
@@ -125,9 +120,7 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
           duration: 9000,
           isClosable: true,
         });
-        if (response.data.notification) {
-          socket.emit("notification send", response.data.notification);
-        }
+        
       })
       .catch((error) => {
         console.log(error);

@@ -20,7 +20,6 @@ import axios from "axios";
 import AlertModal from "../modalComp/AlertModal";
 import FullModal from "../modalComp/FullModal";
 import Inputcomp from "../../Components/InputComp/InputComp";
-import { useSocket, socket } from "../../socket/socket";
 import getRemaingTime from "../../utils/getRemainTime";
 import { MdAccessTime } from "react-icons/md";
 import { useParams } from "react-router-dom";
@@ -35,7 +34,6 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   // console.log(data)
   const {id} = useParams();
   const toast = useToast();
-  useSocket();
   const [status, setStatus] = useState(data.status);
   const [openStatusModal, setOpenstatusModal] = useState(false);
   const [questionId, setQuestionId] = useState("");
@@ -167,7 +165,6 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
           duration: 9000,
           isClosable: true,
         });
-        socket.emit("tournament notification", response.data.question);
       })
       .catch((error) => {
         console.log(error);
