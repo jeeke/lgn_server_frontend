@@ -12,7 +12,8 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Img,Checkbox
+  Img,Checkbox,
+  useToast
 } from "@chakra-ui/react";
 import "./Store.css";
 import { MdKeyboardBackspace } from "react-icons/md";
@@ -28,6 +29,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; 
 
 const Store = () => {
+  const toast = useToast()
   const { setPageType } = GlobalContext();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -149,6 +151,13 @@ const Store = () => {
         setLgnCoin();
         setPolicy("")
         setOpenCreateModal(false);
+        toast({
+          title: 'Success.',
+          description: "Product successfully added",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
       })
       .catch((error) => {
         console.log("Error>", error);
@@ -163,6 +172,13 @@ const Store = () => {
         setLgnCoin();
         setPolicy("")
         setOpenCreateModal(false);
+        toast({
+          title: 'Error.',
+          description: "Something went wrong",
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
       });
   };
 

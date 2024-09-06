@@ -12,6 +12,7 @@ import axios from 'axios';
 
 
 const ReelsComponent = ({data}) => {
+    console.log(data)
     const [title, setTitle] = useState(data.title);
     const [game, setGame] = useState(data.game);
     const [likes, setLikes] = useState(data.likes || []);
@@ -158,6 +159,16 @@ const ReelsComponent = ({data}) => {
         <Box className='reels_title'>{title}</Box>
         <span className="game_tag">{game}</span>
         <Box className="reels_description">{description}</Box>
+        {
+          (data.tags || []).length > 0 &&
+          <Box className='tag_container'>
+          {
+            data.tags.map((tag, index) => (
+              <Box className='tag_item' key={index}>{tag}</Box>
+            ))
+          }
+          </Box>
+        }
         <Box className='reels_like'><FaRegHeart className='likes_icon' />{" "}<span className='likes_count'>{likes.length}</span></Box>
     </Box>
     }

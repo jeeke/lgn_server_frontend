@@ -12,16 +12,10 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
   useToast,
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
-import { FaRegEdit } from "react-icons/fa";
 import AlertModal from "../modalComp/AlertModal";
-import InputComp from "../InputComp/InputComp";
 import axios from "axios";
 import { FaUserLarge } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
@@ -81,6 +75,13 @@ const UserComponent = ({ data, index }) => {
       })
       .catch((error) => {
         console.log(error);
+        toast({
+          title: "Error.",
+          description: "something went wrong",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       });
   };
 
@@ -126,6 +127,13 @@ const UserComponent = ({ data, index }) => {
       })
       .catch((error) => {
         console.log(error);
+        toast({
+          title: "Error!",
+          description: `Something went wrong`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       });
   };
 
@@ -160,10 +168,16 @@ const UserComponent = ({ data, index }) => {
           duration: 9000,
           isClosable: true,
         });
-        
       })
       .catch((error) => {
         console.log(error);
+        toast({
+          title: "Error!",
+          description: `Something went wrong`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       });
   };
 

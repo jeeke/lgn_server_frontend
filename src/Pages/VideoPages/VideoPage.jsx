@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useLayoutEffect} from 'react';
-import {Box, Button, Input, Textarea, Img, Spinner} from "@chakra-ui/react";
+import {Box, Button, Input, Textarea, Img, Spinner, useToast} from "@chakra-ui/react";
 import { GlobalContext } from "../../Context/Context";
 import Layout from "../../Layout/Layout";
 import axios from "axios";
@@ -15,6 +15,7 @@ import FullModal from '../../Components/modalComp/FullModal';
 
 const VideoPage = () => {
     const { setPageType } = GlobalContext();
+    const toast = useToast()
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [reels, setReels] = useState([]);
@@ -29,7 +30,9 @@ const VideoPage = () => {
     const [description, setDescription] = useState("");
     const [image, setImage] = useState("");
     const [prev, setPrev] = useState("");
-    const [btnLoading, setBtnLoading] = useState(false)
+    const [btnLoading, setBtnLoading] = useState(false);
+    const [tag, setTag] = useState('');
+    const [tagList, setTagList] = useState([]);
 
     const debouncedSearchTerm = useDebounce(searchValue, 500);
 
@@ -105,6 +108,7 @@ const VideoPage = () => {
         formdata.append("title", title);
         formdata.append("game", game);
         formdata.append("description", description);
+        formdata.append("tags", JSON.stringify(tagList));
         
         const requestOptions = {
             method: "POST",
@@ -136,6 +140,31 @@ const VideoPage = () => {
                 setBtnLoading(false)
             });
       }
+      const handleChangeTags = (e) => {
+        if(tagList.length<3) {
+          if(e.key === ' ' || e.key === 'Enter') {
+            setTagList(prev => [...prev, tag]);
+            setTag("");
+          }
+        } else {
+          if(e.key === ' ' || e.key === 'Enter') {
+            toast({
+              title: "Warning",
+              description: "You can add maximum 3 tags",
+              status: "warning",
+              duration: 3000,
+              isClosable: true,
+            });
+            setTag("");
+          }
+        }
+      }
+    
+      const removeTag = (value) => {
+        const temp = tagList;
+        const arr = temp.filter(data => data !== value);
+        setTagList(arr)
+      }
 
   return (
     <Layout page='store'>
@@ -152,6 +181,23 @@ const VideoPage = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                 />
+                <Box className="tournament_tag_container">
+                {
+                  tagList.map((value, index) => (
+                    <Box key={index} className="tournament_tag" onClick={() => removeTag(value)}>
+                      {value}
+                    </Box>
+                  ))
+                }
+              </Box>
+              <Input
+                type='text'
+                placeholder='Reels tags'
+                className='banner_input'
+                value={tag}
+                onChange={(e) => setTag(e.target.value.slice(0,10))}
+                onKeyDown={e => handleChangeTags(e)}
+              />
                 <Input
                     type='text'
                     className='store_input'

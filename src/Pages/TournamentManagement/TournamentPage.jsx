@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import Layout from "../../Layout/Layout";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MdKeyboardBackspace } from "react-icons/md";
 import {
   Box,
@@ -11,9 +11,6 @@ import {
   Image,
   Img,
   useToast,
-  FormControl, 
-  FormLabel,
-  Stack
 } from "@chakra-ui/react";
 import "./TournamentPage.css";
 import FullModal from "../../Components/modalComp/FullModal";
@@ -65,7 +62,10 @@ const TournamentPage = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [userLoading, setUserLoading] = useState(false)
   const [stepperCount, setStepperCount] = useState(1);
-  const [forms, setForms] = useState([{ position: '', name: '', image: '' }]);
+  const [forms, setForms] = useState([{ name: '', image: '' }]);
+  const [tag, setTag] = useState('');
+  const [tagList, setTagList] = useState([]);
+  const [gameName, setGameName] = useState("")
 
   useLayoutEffect(() => {
     setPageType("Tournament")
@@ -122,7 +122,7 @@ const TournamentPage = () => {
     setuserId(data._id);
     settournament_by(data.name);
     setSelectUser(data);
-    // setUsers([]);
+    setUsers([]);
     setName("");
   };
 
@@ -150,66 +150,83 @@ const TournamentPage = () => {
     const formdata = new FormData();
     formdata.append("title", title);
     formdata.append("description", description);
-    formdata.append("created_by", "admin");
+    formdata.append("game_name", gameName);
+    formdata.append("tags", JSON.stringify(tagList));
+    formdata.append("image", image);
     formdata.append("streaming_link", link);
     formdata.append("tournament_by", tournament_by);
     formdata.append("streaming_date", date);
     formdata.append("streaming_time", time);
     formdata.append("userId", userId);
-    formdata.append("TournamentImage", image);
+    formdata.append("token", "");
+    formdata.append("created_by", "admin");
+    formdata.append("options", forms);
+    forms.forEach((opt, index) => {
+      console.log(opt)
+      formdata.append(`options[${index}][name]`, opt.name);
+      if (opt.image) {
+        formdata.append(`options[${index}][image]`, opt.image);
+      }
+    });
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow"
-    };
-    fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        // console.log(result);
-        setTournaments(prev => [result.tournament, ...prev]);
-        setTime("");
-        setDate("");
-        setTitle("");
-        setLink("");
-        setPrevImage("");
-        setImage("");
-        setSelectUser("");
-        settournament_by("");
-        setuserId("");
-        setUsers([])
-        setLoading(false);
-        setOpenCreateModal(false);
-        toast({
-          title: "Success",
-          description: "You successfully created a new stream.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      })
-      .catch((error) => {
-        setTime("");
-        setDate("");
-        setTitle("");
-        setLink("");
-        setPrevImage("");
-        setImage("");
-        setSelectUser("");
-        settournament_by("");
-        setuserId("");
-        setLoading(false);
-        setUsers([])
-        setOpenCreateModal(false);
-        toast({
-          title: "Error",
-          description: "something went wrong.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      });
+const requestOptions = {
+  method: "POST",
+  body: formdata,
+  redirect: "follow"
+};
+
+fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
+  .then((response) => response.json())
+  .then((result) => {
+    setTournaments(prev => [result.tournament, ...prev]);
+    setTitle("");
+    setDescription("");
+    setGameName("");
+    setLink("");
+    setDate("");
+    setTime("");
+    setPrevImage("");
+    setImage("");
+    settournament_by("");
+    setuserId("");
+    setUsers([]);
+    setCurrentStep(1);
+    setLoading(false);
+    setOpenCreateModal(false);
+    setForms([{ name: '', image: '' }])
+    toast({
+      title: "Success",
+      description: "You successfully created a new stream.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+    setTitle("");
+    setDescription("");
+    setGameName("");
+    setLink("");
+    setDate("");
+    setTime("");
+    setPrevImage("");
+    setImage("");
+    settournament_by("");
+    setuserId("");
+    setUsers([]);
+    setLoading(false);
+    setCurrentStep(1);
+    setOpenCreateModal(false);
+    setForms([{ name: '', image: '' }])
+    toast({
+      title: "Error",
+      description: "something went wrong.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  });
   };
 
   useEffect(() => {
@@ -309,6 +326,32 @@ const TournamentPage = () => {
     setForms(newForms);
   };
 
+  const handleChangeTags = (e) => {
+    if(tagList.length<3) {
+      if(e.key === ' ' || e.key === 'Enter') {
+        setTagList(prev => [...prev, tag]);
+        setTag("");
+      }
+    } else {
+      if(e.key === ' ' || e.key === 'Enter') {
+        toast({
+          title: "Warning",
+          description: "You can add maximum 3 tags",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+        });
+        setTag("");
+      }
+    }
+  }
+
+  const removeTag = (value) => {
+    const temp = tagList;
+    const arr = temp.filter(data => data !== value);
+    setTagList(arr)
+  }
+
   return (
     <Layout>
       {/* Create a new stream */}
@@ -337,6 +380,7 @@ const TournamentPage = () => {
             
             {
               currentStep === 1 ? <>
+              {/* Stream Title */}
               <Inputcomp
                 type='text'
                 placeholder='Stream title'
@@ -344,6 +388,17 @@ const TournamentPage = () => {
                 value={title}
                 handleChange={(e) => setTitle(e.target.value)}
               />
+
+              {/* Stream Game name */}
+              <Inputcomp
+                type='text'
+                placeholder='Stream game name'
+                className='banner_input'
+                value={gameName}
+                handleChange={(e) => setGameName(e.target.value)}
+              />
+
+              {/* Stream Description */}
               <Inputcomp
                 type='text'
                 placeholder='Stream description'
@@ -351,6 +406,27 @@ const TournamentPage = () => {
                 value={description}
                 handleChange={(e) => setDescription(e.target.value)}
               />
+
+              {/* Stream Tags */}
+              <Box className="tournament_tag_container">
+                {
+                  tagList.map((value, index) => (
+                    <Box key={index} className="tournament_tag" onClick={() => removeTag(value)}>
+                      {value}
+                    </Box>
+                  ))
+                }
+              </Box>
+              <Input
+                type='text'
+                placeholder='Stream tags'
+                className='banner_input'
+                value={tag}
+                onChange={(e) => setTag(e.target.value.slice(0,10))}
+                onKeyDown={e => handleChangeTags(e)}
+              />
+
+              {/* Stream Link */}
               <Inputcomp
                 type='text'
                 placeholder='provide Stream link'
@@ -375,6 +451,8 @@ const TournamentPage = () => {
                 value={date}
                 handleChange={(e) => setDate(e.target.value)}
               />
+
+              {/* Stream Time */}
               <Inputcomp
                 type='time'
                 placeholder='provide Streaming time'
@@ -382,6 +460,7 @@ const TournamentPage = () => {
                 value={time}
                 handleChange={(e) => setTime(e.target.value)}
               />
+              {/* stream Image */}
               {
                   prevImage ? (
                   <Box className='banner_image_preview_setion'>
@@ -455,16 +534,6 @@ const TournamentPage = () => {
                 <Box className="form_groups_container">
                   {forms.map((form, index) => (
                     <Box key={index} className="form_group">
-                      <Box className="form_control">
-                        <Input
-                          name="position"
-                          placeholder="Select leaderboard position"
-                          className='banner_input'
-                          value={form.position}
-                          onChange={(e) => handleChange(index, e)}
-                        />
-                      </Box>
-
                       <Box className="form_control">
                         <Input
                           name="name"
