@@ -236,3 +236,24 @@
     height: fit-content !important; */
     color: black !important;
 }
+.tournament_tag_container {
+    width: 100%;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+}
+.tournament_tag {
+    font-size: 0.75rem;
+    font-size: 500;
+    width: fit-content;
+    height: fit-content;
+    background-color: royalblue;
+    color: aliceblue;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 3px;
+    cursor: pointer;
+}

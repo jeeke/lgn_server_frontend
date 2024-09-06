@@ -8,7 +8,8 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem,Input, Textarea
+  MenuItem,Input, Textarea,
+  useToast
 } from "@chakra-ui/react";
 import { MdMoreHoriz } from "react-icons/md";
 import AlertModal from "../modalComp/AlertModal";
@@ -19,6 +20,7 @@ import { IoMdClose } from "react-icons/io";
 
 
 const StoreComponent = ({ data }) => {
+  const toast = useToast();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false)
   const [isDelete, setIsDelete] = useState(data.status || false);
@@ -54,10 +56,24 @@ const StoreComponent = ({ data }) => {
     axios.request(config)
     .then((response) => {
       console.log(response.data);
-      setIsDelete(response.data.data.status)
+      setIsDelete(response.data.data.status);
+      toast({
+        title: 'Success.',
+        description: "Product has been deleted",
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
     })
     .catch((error) => {
       console.log(error);
+      toast({
+        title: 'Error.',
+        description: "Something went wrong",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
     });
   }
 

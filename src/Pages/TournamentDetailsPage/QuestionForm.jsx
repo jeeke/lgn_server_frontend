@@ -163,7 +163,7 @@ const QuestionForm = ({ id }) => {
           setOptions([{ text: "", image: "" }, { text: "", image: "" }]);
           setLoading(false);
           setQuestionId(result.question._id);
-          setUpdateTimeModal(true)
+          // setUpdateTimeModal(true)
         }
       })
       .catch((error) => console.error(error));

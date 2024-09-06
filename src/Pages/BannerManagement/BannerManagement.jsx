@@ -100,6 +100,13 @@ function BannerManagement() {
           setBtnLoading(false);
           setOpenCreateModal(false);
           setBanners((prev) => [result.banner, ...prev]);
+          toast({
+            title: 'Success.',
+            description: "Banner successfully created",
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          })
         }
       })
       .catch((error) => {
@@ -109,6 +116,13 @@ function BannerManagement() {
         setPrevImage("");
         setBtnLoading(false);
         setOpenCreateModal(false);
+        toast({
+          title: 'Error.',
+          description: "Something went wrong.",
+          status: 'wrong',
+          duration: 3000,
+          isClosable: true,
+        })
       });
   };
 

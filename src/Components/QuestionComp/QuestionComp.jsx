@@ -84,9 +84,15 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     axios
       .request(config)
       .then((response) => {
-        console.log(response.data)
+        console.log(response.data.question.status)
         setStatus(response.data.question.status);
         setOpenstatusModal(false);
+        if(response.data.question.status === "Active") {
+          setUpdateTimeModal(true)
+        }
+        else if(response.data.question.status === "Expired") {
+          setTimeRemaining(getRemaingTime(response.data.question.validUntil))
+        }
         toast({
           title: "Success.",
           description: `${response.data.message}`,
@@ -94,7 +100,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
           duration: 9000,
           isClosable: true,
         });
-        setUpdateQuestions(response.data.question)
+        // setUpdateQuestions(response.data.question);
       })
       .catch((error) => {
         console.log(error);
@@ -281,8 +287,9 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     channel.bind('expire-tournament-question-notification', function(data) {
       // console.log("#Updated question data",data);
       // Handle the notification data as needed;
-      if(data.isExpire) {
-        setUpdateQuestions(data);
+      if(data.length === 0) {
+        console.log("Question expire")
+        // setUpdateQuestions(data);
       }
     });
     return () => {
@@ -311,7 +318,6 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     axios.request(config)
     .then((response) => {
       setUpdateQuestions(response.data);
-      setUpdateTimeModal(true)
     })
     .catch((error) => {
       console.log(error);
@@ -324,11 +330,38 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     setOptionId(option._id);
   }
 
+  const handleUpdatequestionTime = () => {
+    let data = JSON.stringify({
+      "isInfiniteTime": isInfiniteTime,
+      "time": counter
+    });
+    
+    let config = {
+      method: 'put',
+      maxBodyLength: Infinity,
+      url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-time/${questionId}`,
+      headers: { 
+        'x-access-token': localStorage.getItem("token"), 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      console.log("****************",response.data.question);
+      setUpdateTimeModal(false)
+      setUpdateQuestions(response.data.question);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
   return (
     <>
-      {/* {
-        updateTimeModal &&
-        <AlertModal 
+    {updateTimeModal && (
+        <AlertModal
           isOpen={updateTimeModal}
           onClose={() => setUpdateTimeModal(false)}
           title={"Update question validity time"}
@@ -336,26 +369,26 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
             <Box className="question_time_modal_body">
               <Box className="update_time_section">
                 <Box className="counter_section">
-                <Button className={counter > 1 ? "counter_btn" : "disable_counter_btn"} onClick={handleDecrement}><FaMinus /></Button>
+                  <Button className={counter > 1 ? "counter_btn" : "disable_counter_btn"} onClick={handleDecrement}>
+                    <FaMinus />
+                  </Button>
                   <span className="counter">{counter}</span>
-                  <Button className="counter_btn" onClick={() => setCounter(prev => prev + 1)}><FiPlus /></Button>
+                  <Button className="counter_btn" onClick={() => setCounter((prev) => prev + 1)}>
+                    <FiPlus />
+                  </Button>
                 </Box>
-                <FormControl display='flex' alignItems='center'>
-                    <FormLabel htmlFor='infinite-time' mb='0'>
-                      Enable infinite time for question?
-                    </FormLabel>
-                    <Switch id='infinite-time' isChecked={isInfiniteTime} onChange={handleChange} />
+                <FormControl display="flex" alignItems="center">
+                  <FormLabel htmlFor="infinite-time" mb="0">
+                    Enable infinite time for question?
+                  </FormLabel>
+                  <Switch id="infinite-time" isChecked={isInfiniteTime} onChange={(e) => setIsInfiniteTime(e.target.checked)} />
                 </FormControl>
               </Box>
             </Box>
           }
-          footer={
-            <Button className='modal_btn' onClick={handleUpdatequestionTime}>
-                Update
-            </Button>
-          }
+          footer={<Button className="modal_btn" onClick={handleUpdatequestionTime}>Update</Button>}
         />
-      } */}
+      )}
       {
         confirmModal &&
         <AlertModal 

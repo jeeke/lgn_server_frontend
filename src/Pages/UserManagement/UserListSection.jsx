@@ -9,7 +9,6 @@ import {
   Tbody,
   Tr,
   Th,
-  TableCaption,
   TableContainer,
   Td,
   Spinner,
