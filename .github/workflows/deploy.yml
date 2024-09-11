@@ -62,6 +62,6 @@ jobs:
           echo "Building project"
           sudo npm run build || { echo "npm run build failed"; exit 1; }
           echo "Copying files to /var/www/html/"
-          sudo cp -r /home/ubuntu/lgn_server_frontend/build/* /var/www/html/lgnsf || { echo "File copy failed"; exit 1; }
+          sudo cp -r /home/ubuntu/lgn_server_frontend/build/* /var/www/html/lgnserfroend || { echo "File copy failed"; exit 1; }
           echo "Deployment successful"
         EOF
