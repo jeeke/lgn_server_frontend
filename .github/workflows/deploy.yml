@@ -48,7 +48,7 @@ jobs:
     - name: Deploy to EC2
       env:
         EC2_USER: ubuntu
-        EC2_HOST: ec2-52-66-253-179.ap-south-1.compute.amazonaws.com
+        EC2_HOST: ec2-13-201-54-81.ap-south-1.compute.amazonaws.com
       run: |
         ssh -o StrictHostKeyChecking=no ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
           echo "Connecting to EC2 instance"
