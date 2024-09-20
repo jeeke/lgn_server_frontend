@@ -1,0 +1,14 @@
+.reedem_history_loader_page {
+    width: 100%;
+    height: 69.5vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.render_reedem_copons_section {
+    border: 1px solid red;
+    width: 100%;
+    height: 50vh;
+    overflow: scroll;
+}

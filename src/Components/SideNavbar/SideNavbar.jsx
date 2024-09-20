@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, useToast } from '@chakra-ui/react';
 import "./SideNavbar.css";
 import { GoHome } from "react-icons/go";
@@ -7,114 +7,127 @@ import { FaBell, FaGift, FaTrophy, FaUser } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { useNavigate, NavLink } from "react-router-dom";
 import { BsCameraReels } from "react-icons/bs";
-import {GlobalContext} from "../../Context/Context";
+import { GlobalContext } from "../../Context/Context";
+import { FaRegUser } from "react-icons/fa";
 
 
-const SideNavbar = () => {  
-  const toast = useToast()
-  const {notificationsCount, setNotificationsCount} = GlobalContext();
-  
-  
+const SideNavbar = () => {
+  const toast = useToast();
+  const { notificationsCount, setNotificationsCount } = GlobalContext();
+
+
   return (
     <Box className='sidnavbar_container'>
       {/* Home */}
       <NavLink
-            to='/'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <GoHome className='navitem_icon' />
-            <Box className='navitem_name'>Dashboard</Box>
+        to='/'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <GoHome className='navitem_icon' />
+        <Box className='navitem_name'>Dashboard</Box>
       </NavLink>
 
       {/* Banner management */}
       <NavLink
-            to='/banner'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <PiFlagBannerFill className='navitem_icon' />
-            <Box className='navitem_name'>Banner Management</Box>
+        to='/banner'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <PiFlagBannerFill className='navitem_icon' />
+        <Box className='navitem_name'>Banner Management</Box>
       </NavLink>
 
       {/* User management */}
       <NavLink
-            to='/user'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <FaUser className='navitem_icon' />
-            <Box className='navitem_name'>User Management</Box>
+        to='/user'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <FaUser className='navitem_icon' />
+        <Box className='navitem_name'>User Management</Box>
       </NavLink>
 
       {/* tournament management */}
       <NavLink
-            to='/tournament'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <FaTrophy className='navitem_icon' />
-            <Box className='navitem_name'>Tournament Management</Box>
+        to='/tournament'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <FaTrophy className='navitem_icon' />
+        <Box className='navitem_name'>Tournament Management</Box>
       </NavLink>
 
       {/* Notificatin management */}
       <NavLink
-            to='/notification'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <FaBell className='navitem_icon' />
-            <Box className='navitem_name'>Notification Management</Box>
-            <Box className='navitem_name'>{notificationsCount> 0 && notificationsCount}</Box>
+        to='/notification'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <FaBell className='navitem_icon' />
+        <Box className='navitem_name'>Notification Management</Box>
+        <Box className='navitem_name'>{notificationsCount > 0 && notificationsCount}</Box>
       </NavLink>
 
       {/* Support management */}
       <NavLink
-            to='/support'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <BiSupport className='navitem_icon' />
-            <Box className='navitem_name'>Support Tickets</Box>
+        to='/support'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <BiSupport className='navitem_icon' />
+        <Box className='navitem_name'>Support Tickets</Box>
       </NavLink>
 
       {/* Store management */}
       <NavLink
-            to='/store'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <BiSupport className='navitem_icon' />
-            <Box className='navitem_name'>Store</Box>
+        to='/store'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <BiSupport className='navitem_icon' />
+        <Box className='navitem_name'>Store</Box>
       </NavLink>
 
       {/* Reels management */}
       <NavLink
-            to='/reels'
-            className={(navData) =>
-              navData.isActive
-                ? `navitem active_navitem`
-                : `navitem`
-            }>
-            <BsCameraReels className='navitem_icon' />
-            <Box className='navitem_name'>Reels</Box>
+        to='/reels'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <BsCameraReels className='navitem_icon' />
+        <Box className='navitem_name'>Reels</Box>
+      </NavLink>
+
+      {/* reedem history management */}
+      <NavLink
+        to='/reedem-history'
+        className={(navData) =>
+          navData.isActive
+            ? `navitem active_navitem`
+            : `navitem`
+        }>
+        <FaRegUser className='navitem_icon' />
+        <Box className='navitem_name'>Reedem History</Box>
       </NavLink>
     </Box>
-  )
-}
+  );
+};
 
-export default SideNavbar
+export default SideNavbar;

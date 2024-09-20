@@ -1,5 +1,5 @@
-import React, {useEffect} from "react";
-import "./App.css"
+import React, { useEffect } from "react";
+import "./App.css";
 import { Box, Button } from "@chakra-ui/react";
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./Authentication/ProtectRoute";
@@ -7,7 +7,7 @@ import ProtectedRoute from "./Authentication/ProtectRoute";
 import Register from "./Pages/Register/Register";
 import Login from "./Pages/Login/Login";
 import Home from "./Pages/Home/Home";
-import Profile from "./Pages/Profile/Profile"
+import Profile from "./Pages/Profile/Profile";
 import BannerManagement from "./Pages/BannerManagement/BannerManagement";
 import UserManagement from "./Pages/UserManagement/UserManagement";
 import TournamentPage from "./Pages/TournamentManagement/TournamentPage.jsx";
@@ -17,6 +17,7 @@ import SupportPage from "./Pages/SupportPage/SupportPage";
 import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage";
 import Store from "./Pages/Store/Store.jsx";
 import VideoPage from "./Pages/VideoPages/VideoPage.jsx";
+import ReedemHistory from "./Pages/ReedemHistory/ReedemHistory.jsx";
 
 
 import Pusher from 'pusher-js';
@@ -24,17 +25,17 @@ import { GlobalContext } from "./Context/Context";
 
 
 function App() {
-  const {setNotifications, setNotificationsCount} = GlobalContext()
+  const { setNotifications, setNotificationsCount } = GlobalContext();
 
   useEffect(() => {
     // Initialize Pusher
     const pusher = new Pusher(process.env.REACT_APP_KEY, {
       cluster: process.env.REACT_APP_CLUSTER,
     });
-  
+
     // Subscribe to the channel
     const channel = pusher.subscribe('user-channel');
-  
+
     // Bind to an event
     channel.bind('admin-notification', (data) => {
       console.log(data);
@@ -43,7 +44,7 @@ function App() {
         setNotificationsCount((prev) => prev + 1);
       }
     });
-  
+
     // Cleanup function to unsubscribe from the channel
     return () => {
       channel.unbind_all();
@@ -51,13 +52,13 @@ function App() {
       pusher.disconnect(); // Disconnect Pusher when component unmounts
     };
   }, []); // Empty dependency array to run once
-  
 
-  
+
+
   return (
     <div className="app">
-    <Routes>
-      <Route path='/register' exact element={<Register />} />
+      <Routes>
+        <Route path='/register' exact element={<Register />} />
         <Route path='/login' exact element={<Login />} />
 
         {/* Home page */}
@@ -165,6 +166,17 @@ function App() {
           }
         />
 
+        {/* Reedem History page */}
+        <Route
+          path={`/reedem-history`}
+          exact
+          element={
+            <ProtectedRoute>
+              <ReedemHistory />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Create Banner page */}
         <Route
           path='*'
@@ -173,7 +185,7 @@ function App() {
             <NotFoundPage />
           }
         />
-    </Routes>
+      </Routes>
     </div>
   );
 }
