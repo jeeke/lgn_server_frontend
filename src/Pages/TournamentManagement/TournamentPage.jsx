@@ -29,15 +29,16 @@ import SearchTournament from "./SearchTournament";
 import { GlobalContext } from "../../Context/Context";
 import { FaCheck } from "react-icons/fa6";
 import { FaRegTrashAlt } from "react-icons/fa";
+import Pusher from 'pusher-js';
 
 const TournamentPage = () => {
   const toast = useToast();
-  const {setPageType} = GlobalContext();
+  const { setPageType } = GlobalContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("")
+  const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -59,17 +60,32 @@ const TournamentPage = () => {
   const [searchTitle, setSearchTitle] = useState("");
   const [searchtournamentsList, setSearchTournamentsList] = useState([]);
   const [updateTournament, setUpdateTournament] = useState(null);
-  const [currentStep, setCurrentStep] = useState(1)
-  const [userLoading, setUserLoading] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1);
+  const [userLoading, setUserLoading] = useState(false);
   const [stepperCount, setStepperCount] = useState(1);
   const [forms, setForms] = useState([{ name: '', image: '' }]);
   const [tag, setTag] = useState('');
   const [tagList, setTagList] = useState([]);
-  const [gameName, setGameName] = useState("")
+  const [gameName, setGameName] = useState("");
 
   useLayoutEffect(() => {
-    setPageType("Tournament")
-  })
+    setPageType("Tournament");
+  });
+
+  useEffect(() => {
+    const pusher = new Pusher(process.env.REACT_APP_KEY, {
+      cluster: process.env.REACT_APP_CLUSTER,
+      useTLS: true
+    });
+    const channel = pusher.subscribe('tournaments');
+    channel.bind('status-updated', (data) => {
+      console.log('Received tournament update:', data);
+    });
+    return () => {
+      channel.unbind_all();
+      pusher.unsubscribe('tournaments');
+    };
+  }, []);
 
   const handleIncrementPage = () => {
     setLoadPageBtn(true);
@@ -89,7 +105,7 @@ const TournamentPage = () => {
   };
 
   useEffect(() => {
-    setUserLoading(true)
+    setUserLoading(true);
     let data = JSON.stringify({
       name: name,
       email: "",
@@ -132,6 +148,7 @@ const TournamentPage = () => {
       !date.trim() ||
       !time.trim() ||
       !link.trim() ||
+      !description.trim() ||
       !image ||
       !userId.trim()
     ) {
@@ -139,7 +156,7 @@ const TournamentPage = () => {
     } else {
       setDisable(false);
     }
-  }, [title, date, time, link, image, userId]);
+  }, [title, date, description, time, link, image, userId]);
 
   const handleCreateTournament = () => {
     setDisable(true);
@@ -162,75 +179,79 @@ const TournamentPage = () => {
     formdata.append("created_by", "admin");
     formdata.append("options", forms);
     forms.forEach((opt, index) => {
-      console.log(opt)
+      console.log(opt);
       formdata.append(`options[${index}][name]`, opt.name);
       if (opt.image) {
         formdata.append(`options[${index}][image]`, opt.image);
       }
     });
 
-const requestOptions = {
-  method: "POST",
-  body: formdata,
-  redirect: "follow"
-};
+    const requestOptions = {
+      method: "POST",
+      body: formdata,
+      redirect: "follow"
+    };
 
-fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
-  .then((response) => response.json())
-  .then((result) => {
-    setTournaments(prev => [result.tournament, ...prev]);
-    setTitle("");
-    setDescription("");
-    setGameName("");
-    setLink("");
-    setDate("");
-    setTime("");
-    setPrevImage("");
-    setImage("");
-    settournament_by("");
-    setuserId("");
-    setUsers([]);
-    setCurrentStep(1);
-    setLoading(false);
-    setOpenCreateModal(false);
-    setForms([{ name: '', image: '' }])
-    toast({
-      title: "Success",
-      description: "You successfully created a new stream.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-  })
-  .catch((error) => {
-    console.error(error);
-    setTitle("");
-    setDescription("");
-    setGameName("");
-    setLink("");
-    setDate("");
-    setTime("");
-    setPrevImage("");
-    setImage("");
-    settournament_by("");
-    setuserId("");
-    setUsers([]);
-    setLoading(false);
-    setCurrentStep(1);
-    setOpenCreateModal(false);
-    setForms([{ name: '', image: '' }])
-    toast({
-      title: "Error",
-      description: "something went wrong.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  });
+    fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        setTournaments(prev => [result.tournament, ...prev]);
+        setTitle("");
+        setDescription("");
+        setGameName("");
+        setLink("");
+        setDate("");
+        setTime("");
+        setPrevImage("");
+        setImage("");
+        settournament_by("");
+        setuserId("");
+        setUsers([]);
+        setCurrentStep(1);
+        setLoading(false);
+        setOpenCreateModal(false);
+        setTagList([]);
+        setSelectUser("");
+        setForms([{ name: '', image: '' }]);
+        toast({
+          title: "Success",
+          description: "You successfully created a new stream.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        setTitle("");
+        setDescription("");
+        setGameName("");
+        setLink("");
+        setDate("");
+        setTime("");
+        setPrevImage("");
+        setImage("");
+        settournament_by("");
+        setuserId("");
+        setUsers([]);
+        setLoading(false);
+        setCurrentStep(1);
+        setOpenCreateModal(false);
+        setTagList([]);
+        setSelectUser("");
+        setForms([{ name: '', image: '' }]);
+        toast({
+          title: "Error",
+          description: "something went wrong.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
   };
 
   useEffect(() => {
-    if(searchTitle.trim() !== "") {
+    if (searchTitle.trim() !== "") {
       // console.log("SEARCH API call")
       if (page === 1) {
         setMainLoader(true);
@@ -239,13 +260,13 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
         method: 'get',
         maxBodyLength: Infinity,
         url: `${process.env.REACT_APP_BASE_URL}api/tournament/search_tournaments?name=${searchTitle}&page=${page}&limit=${limit}`,
-        headers: { }
+        headers: {}
       };
-      
+
       axios.request(config)
-      .then((response) => {
-        // console.log((response.data));
-        setCount(response.data.tournaments.length);
+        .then((response) => {
+          // console.log((response.data));
+          setCount(response.data.tournaments.length);
           if (page === 1) {
             setSearchTournamentsList(response.data.tournaments);
           } else {
@@ -253,11 +274,11 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
           }
           setMainLoader(false);
           setLoadPageBtn(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    } else  {
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
       if (page === 1) {
         setMainLoader(true);
       }
@@ -267,7 +288,7 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
         url: `${process.env.REACT_APP_BASE_URL}api/tournament/?page=${page}&limit=${limit}`,
         headers: {},
       };
-  
+
       axios
         .request(config)
         .then((response) => {
@@ -288,13 +309,13 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
   }, [searchTitle, page, setUpdateTournament]);
 
   const handleChangeName = e => {
-    setSearchTitle(e.target.value)
-  }
+    setSearchTitle(e.target.value);
+  };
 
   const stepperIndicator = [
-    {id: 1, title: "Basic Information"},
-    {id: 2, title: "Select streamer"},
-    {id: 3, title: "Create leaderboard gift"},
+    { id: 1, title: "Basic Information" },
+    { id: 2, title: "Select streamer" },
+    { id: 3, title: "Create leaderboard gift" },
   ];
 
 
@@ -327,13 +348,13 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
   };
 
   const handleChangeTags = (e) => {
-    if(tagList.length<3) {
-      if(e.key === ' ' || e.key === 'Enter') {
+    if (tagList.length < 3) {
+      if (e.key === ' ' || e.key === 'Enter') {
         setTagList(prev => [...prev, tag]);
         setTag("");
       }
     } else {
-      if(e.key === ' ' || e.key === 'Enter') {
+      if (e.key === ' ' || e.key === 'Enter') {
         toast({
           title: "Warning",
           description: "You can add maximum 3 tags",
@@ -344,18 +365,18 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
         setTag("");
       }
     }
-  }
+  };
 
   const removeTag = (value) => {
     const temp = tagList;
     const arr = temp.filter(data => data !== value);
-    setTagList(arr)
-  }
+    setTagList(arr);
+  };
 
   return (
     <Layout>
       {/* Create a new stream */}
-       <FullModal
+      <FullModal
         isOpen={openCreateModal}
         onClose={handleCloseCreateBannerModal}
         title={<Box className='banner_create_title'>Create new tournament</Box>}
@@ -367,207 +388,207 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
                   <Box key={data.id} className="stepper_box">
                     {
                       currentStep < data.id ? <Box className="stepper_position">{data.id}</Box> :
-                      <Box className="stepper_position complete_step">
-                        <FaCheck className="tick_stepper" />
-                      </Box>
+                        <Box className="stepper_position complete_step">
+                          <FaCheck className="tick_stepper" />
+                        </Box>
                     }
                     <Box className="stepper_name">{data.title}</Box>
                   </Box>
                 ))
               }
-              <Box className="stepper_indicator" style={{ width: `${(currentStep-1)*40}%`}}></Box>
+              <Box className="stepper_indicator" style={{ width: `${(currentStep - 1) * 40}%` }}></Box>
             </Box>
-            
+
             {
               currentStep === 1 ? <>
-              {/* Stream Title */}
-              <Inputcomp
-                type='text'
-                placeholder='Stream title'
-                className='banner_input'
-                value={title}
-                handleChange={(e) => setTitle(e.target.value)}
-              />
-
-              {/* Stream Game name */}
-              <Inputcomp
-                type='text'
-                placeholder='Stream game name'
-                className='banner_input'
-                value={gameName}
-                handleChange={(e) => setGameName(e.target.value)}
-              />
-
-              {/* Stream Description */}
-              <Inputcomp
-                type='text'
-                placeholder='Stream description'
-                className='banner_input'
-                value={description}
-                handleChange={(e) => setDescription(e.target.value)}
-              />
-
-              {/* Stream Tags */}
-              <Box className="tournament_tag_container">
-                {
-                  tagList.map((value, index) => (
-                    <Box key={index} className="tournament_tag" onClick={() => removeTag(value)}>
-                      {value}
-                    </Box>
-                  ))
-                }
-              </Box>
-              <Input
-                type='text'
-                placeholder='Stream tags'
-                className='banner_input'
-                value={tag}
-                onChange={(e) => setTag(e.target.value.slice(0,10))}
-                onKeyDown={e => handleChangeTags(e)}
-              />
-
-              {/* Stream Link */}
-              <Inputcomp
-                type='text'
-                placeholder='provide Stream link'
-                className='banner_input'
-                value={link}
-                handleChange={(e) => setLink(e.target.value)}
-              />
-              {
-                link &&
-                <iframe
-                  title="YouTube video player"
-                  src={link}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+                {/* Stream Title */}
+                <Inputcomp
+                  type='text'
+                  placeholder='Stream title'
+                  className='banner_input'
+                  value={title}
+                  handleChange={(e) => setTitle(e.target.value)}
                 />
-              }
-              <Inputcomp
-                type='date'
-                placeholder='provide Streaming date'
-                className='banner_input'
-                value={date}
-                handleChange={(e) => setDate(e.target.value)}
-              />
 
-              {/* Stream Time */}
-              <Inputcomp
-                type='time'
-                placeholder='provide Streaming time'
-                className='banner_input'
-                value={time}
-                handleChange={(e) => setTime(e.target.value)}
-              />
-              {/* stream Image */}
-              {
+                {/* Stream Game name */}
+                <Inputcomp
+                  type='text'
+                  placeholder='Stream game name'
+                  className='banner_input'
+                  value={gameName}
+                  handleChange={(e) => setGameName(e.target.value)}
+                />
+
+                {/* Stream Description */}
+                <Inputcomp
+                  type='text'
+                  placeholder='Stream description'
+                  className='banner_input'
+                  value={description}
+                  handleChange={(e) => setDescription(e.target.value)}
+                />
+
+                {/* Stream Tags */}
+                <Box className="tournament_tag_container">
+                  {
+                    tagList.map((value, index) => (
+                      <Box key={index} className="tournament_tag" onClick={() => removeTag(value)}>
+                        {value}
+                      </Box>
+                    ))
+                  }
+                </Box>
+                <Input
+                  type='text'
+                  placeholder='Stream tags'
+                  className='banner_input'
+                  value={tag}
+                  onChange={(e) => setTag(e.target.value.slice(0, 10))}
+                  onKeyDown={e => handleChangeTags(e)}
+                />
+
+                {/* Stream Link */}
+                <Inputcomp
+                  type='text'
+                  placeholder='provide Stream link'
+                  className='banner_input'
+                  value={link}
+                  handleChange={(e) => setLink(e.target.value)}
+                />
+                {
+                  link &&
+                  <iframe
+                    title="YouTube video player"
+                    src={link}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                }
+                <Inputcomp
+                  type='date'
+                  placeholder='provide Streaming date'
+                  className='banner_input'
+                  value={date}
+                  handleChange={(e) => setDate(e.target.value)}
+                />
+
+                {/* Stream Time */}
+                <Inputcomp
+                  type='time'
+                  placeholder='provide Streaming time'
+                  className='banner_input'
+                  value={time}
+                  handleChange={(e) => setTime(e.target.value)}
+                />
+                {/* stream Image */}
+                {
                   prevImage ? (
-                  <Box className='banner_image_preview_setion'>
-                    <Image src={prevImage} className='preview_image' />
-                    <Button className='close_prev_btn' onClick={handleCloseImage}>
-                      <MdClose />
-                    </Button>
-                  </Box>
-                ) : (
-                  <Box className='banner_image_section'>
-                    <label htmlFor='banner_image'>
-                      <FiUpload className='banner_file_icon' />
-                    </label>
-                    <Input
-                      type='file'
-                      id='banner_image'
-                      className='file_input'
-                      onChange={(e) => handleImageChange(e)}
-                    />
-                  </Box>
-                )}
-              </> : 
-              <>
-              {
-                currentStep === 2 ? 
-                <>
-                  {/* Select User */}
-                  {selectUser && (
-                    <Box
-                      className='select_user_section'
-                      onClick={() => setSelectUser("")}>
-                      <span className='select_user_name'>{selectUser.name}</span>
-                      <IoMdClose className='cancel_icon' />
+                    <Box className='banner_image_preview_setion'>
+                      <Image src={prevImage} className='preview_image' />
+                      <Button className='close_prev_btn' onClick={handleCloseImage}>
+                        <MdClose />
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Box className='banner_image_section'>
+                      <label htmlFor='banner_image'>
+                        <FiUpload className='banner_file_icon' />
+                      </label>
+                      <Input
+                        type='file'
+                        id='banner_image'
+                        className='file_input'
+                        onChange={(e) => handleImageChange(e)}
+                      />
                     </Box>
                   )}
-                  {/* Search input form */}
-                  <Inputcomp
-                    type='text'
-                    placeholder='Search user...'
-                    className='banner_input'
-                    value={name}
-                    handleChange={(e) => setName(e.target.value)}
-                  />
-                  {/* Rendering user list */}
-                  <Box className="modal_search_list">
-                    {
-                      userLoading ? <Box className="modal_search_loading">
-                        <Loader />
-                      </Box> : 
+              </> :
+                <>
+                  {
+                    currentStep === 2 ?
                       <>
-                      {(users || []).length > 0 ? (
-                        <Box className='user_list_section'>
-                          {users.map((data) => (
+                        {/* Select User */}
+                        {selectUser && (
                           <Box
-                            key={data._id}
-                            className='user_card'
-                            data={data._id}
-                            onClick={() => handleAddUser(data)}>
-                              <Img
-                                src={selectUser.profile_img || Avatar}
-                                className='user_avatar'
-                              />
-                              <span className='user_name'>{data.name}</span>
+                            className='select_user_section'
+                            onClick={() => setSelectUser("")}>
+                            <span className='select_user_name'>{selectUser.name}</span>
+                            <IoMdClose className='cancel_icon' />
                           </Box>
-                  ))}
-                </Box>
-              ) : null}</>
-                    }
-                  </Box>
-                </> : 
-                <Box className="form_groups_container">
-                  {forms.map((form, index) => (
-                    <Box key={index} className="form_group">
-                      <Box className="form_control">
-                        <Input
-                          name="name"
-                          placeholder="Enter gift title"
-                          className='banner_input'
-                          value={form.name}
-                          onChange={(e) => handleChange(index, e)}
-                        />
-                      </Box>
-
-                      <Box className="form_control">
-                        <Input
-                          type="file"
-                          className='banner_input'
-                          placeholder="Gift Image"
-                          accept="image/*"
-                          onChange={(e) => handleGiftImageChange(index, e)}
-                        />
-                      </Box>
-                      {forms.length > 1 && (
-                        <Button
-                          className="remove_btn"
-                            onClick={() => handleRemoveForm(index)}>
-                              <FaRegTrashAlt />
-                            </Button>
                         )}
-                    </Box>
-                    ))}
-                     <Box className="add_more_btn_container">
-                      <Button className="add_more_modal_btn" onClick={handleAddForm}>Add More</Button>
-                     </Box>
-                </Box>
-              }
-              </>
+                        {/* Search input form */}
+                        <Inputcomp
+                          type='text'
+                          placeholder='Search user...'
+                          className='banner_input'
+                          value={name}
+                          handleChange={(e) => setName(e.target.value)}
+                        />
+                        {/* Rendering user list */}
+                        <Box className="modal_search_list">
+                          {
+                            userLoading ? <Box className="modal_search_loading">
+                              <Loader />
+                            </Box> :
+                              <>
+                                {(users || []).length > 0 ? (
+                                  <Box className='user_list_section'>
+                                    {users.map((data) => (
+                                      <Box
+                                        key={data._id}
+                                        className='user_card'
+                                        data={data._id}
+                                        onClick={() => handleAddUser(data)}>
+                                        <Img
+                                          src={selectUser.profile_img || Avatar}
+                                          className='user_avatar'
+                                        />
+                                        <span className='user_name'>{data.name}</span>
+                                      </Box>
+                                    ))}
+                                  </Box>
+                                ) : null}</>
+                          }
+                        </Box>
+                      </> :
+                      <Box className="form_groups_container">
+                        {forms.map((form, index) => (
+                          <Box key={index} className="form_group">
+                            <Box className="form_control">
+                              <Input
+                                name="name"
+                                placeholder="Enter gift title"
+                                className='banner_input'
+                                value={form.name}
+                                onChange={(e) => handleChange(index, e)}
+                              />
+                            </Box>
+
+                            <Box className="form_control">
+                              <Input
+                                type="file"
+                                className='banner_input'
+                                placeholder="Gift Image"
+                                accept="image/*"
+                                onChange={(e) => handleGiftImageChange(index, e)}
+                              />
+                            </Box>
+                            {forms.length > 1 && (
+                              <Button
+                                className="remove_btn"
+                                onClick={() => handleRemoveForm(index)}>
+                                <FaRegTrashAlt />
+                              </Button>
+                            )}
+                          </Box>
+                        ))}
+                        <Box className="add_more_btn_container">
+                          <Button className="add_more_modal_btn" onClick={handleAddForm}>Add More</Button>
+                        </Box>
+                      </Box>
+                  }
+                </>
             }
           </Box>
         }
@@ -575,17 +596,17 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
           <Box className='create_banner_footer'>
             {
               currentStep === 3 ? <ButtonComp
-              loading={loading}
-              disable={disable}
-              className='banner_create_btn'
-              disableClassName='disable_banner_create_btn'
-              text='Save'
-              handleClick={handleCreateTournament}
-            /> : <Button className="modal_btn" onClick={() => setCurrentStep(prev => prev + 1)}>Next</Button>
+                loading={loading}
+                disable={disable}
+                className='banner_create_btn'
+                disableClassName='disable_banner_create_btn'
+                text='Save'
+                handleClick={handleCreateTournament}
+              /> : <Button className="modal_btn" onClick={() => setCurrentStep(prev => prev + 1)}>Next</Button>
             }
           </Box>
         }
-      /> 
+      />
 
       <Box className='banner_page_container'>
         {/* Header Section */}
@@ -613,27 +634,27 @@ fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/create`, requestOptions)
 
         <Box className='banner_section'>
           {
-            !searchTitle.trim() ? 
-          <ListTournament 
-            tournaments={tournaments} 
-            handleIncrementPage={handleIncrementPage}
-            count={count}
-            limit={limit}
-            mainLoader={mainLoader}
-            loadPageBtn={loadPageBtn}
-            setUpdateTournament={setUpdateTournament}
-          />: 
-          <SearchTournament 
-            tournaments={searchtournamentsList} 
-            handleIncrementPage={handleIncrementPage}
-            count={count}
-            limit={limit}
-            mainLoader={mainLoader}
-            loadPageBtn={loadPageBtn}
-            setUpdateTournament={setUpdateTournament}
-          />
+            !searchTitle.trim() ?
+              <ListTournament
+                tournaments={tournaments}
+                handleIncrementPage={handleIncrementPage}
+                count={count}
+                limit={limit}
+                mainLoader={mainLoader}
+                loadPageBtn={loadPageBtn}
+                setUpdateTournament={setUpdateTournament}
+              /> :
+              <SearchTournament
+                tournaments={searchtournamentsList}
+                handleIncrementPage={handleIncrementPage}
+                count={count}
+                limit={limit}
+                mainLoader={mainLoader}
+                loadPageBtn={loadPageBtn}
+                setUpdateTournament={setUpdateTournament}
+              />
           }
-          
+
         </Box>
       </Box>
     </Layout>

@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Tr,
@@ -11,7 +11,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  useToast,Input
+  useToast, Input
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { FaRegEdit, FaRegEye } from "react-icons/fa";
@@ -21,10 +21,10 @@ import TourImage from "../../Assets/image.png";
 import { useNavigate } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import FullModal from "../modalComp/FullModal";
-import ButtonComp from "../ButtonComp/AuthButton"
+import ButtonComp from "../ButtonComp/AuthButton";
 import InputComp from "../InputComp/InputComp";
-import {MdClose} from "react-icons/md";
-import {FiUpload} from "react-icons/fi"
+import { MdClose } from "react-icons/md";
+import { FiUpload } from "react-icons/fi";
 
 const TournamentsComp = ({ data, index, setUpdateTournament }) => {
   const toast = useToast();
@@ -51,7 +51,8 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
   const [selectDate, setSelectDate] = useState('');
   const [selectTime, setSelectTime] = useState("");
 
-  
+
+
 
   const handleOpenDeleteModal = (id) => {
     setOpenDeleteModal(true);
@@ -120,7 +121,7 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
           duration: 9000,
           isClosable: true,
         });
-        
+
       })
       .catch((error) => {
         console.log(error);
@@ -129,19 +130,19 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
   };
 
   const handleEditModal = (data) => {
-    console.log(data)
+    console.log(data);
     setOpenEditModal(true);
     setTournamentId(data._id);
     setSelectTitle(data.title);
     setSelectLink(data.streaming_link);
     setSelectDate(data.streaming_date);
     setSelectTime(data.streaming_time);
-    setStreamImage(data.image)
-  }
+    setStreamImage(data.image);
+  };
 
   const handleCloseImage = () => {
-    setStreamImage("")
-  }
+    setStreamImage("");
+  };
 
   const handleEditTournament = () => {
     const myHeaders = new Headers();
@@ -159,22 +160,22 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
       redirect: "follow"
     };
     fetch(`${process.env.REACT_APP_BASE_URL}api/tournament/edit-tournament/${tournamentId}`, requestOptions) // 
-    .then((response) => response.json())
-    .then((result) => {
-      console.log(result);
-      setTitle(result.data.title);
-      setSelectTitle('');
-      setDate(result.data.streaming_date);
-      setSelectDate('');
-      setLink(result.data.streaming_link);
-      setSelectLink("")
-      setTournamentId('');
-      setTime(result.data.streaming_time)
-      setSelectTime(result.data.image)
-      setOpenEditModal(false);
-    })
-    .catch((error) => console.error(error));
-  }
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        setTitle(result.data.title);
+        setSelectTitle('');
+        setDate(result.data.streaming_date);
+        setSelectDate('');
+        setLink(result.data.streaming_link);
+        setSelectLink("");
+        setTournamentId('');
+        setTime(result.data.streaming_time);
+        setSelectTime(result.data.image);
+        setOpenEditModal(false);
+      })
+      .catch((error) => console.error(error));
+  };
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -217,20 +218,20 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
       )}
 
       {
-        openEditModal && 
-        <FullModal 
-          isOpen={openEditModal} 
-          onClose={() => setOpenEditModal(false)} 
+        openEditModal &&
+        <FullModal
+          isOpen={openEditModal}
+          onClose={() => setOpenEditModal(false)}
           title="Edit tournament details"
           body={<Box className='create_tour_body'>
-            <InputComp 
+            <InputComp
               type="text"
               placeholder="Enter tournament title"
               className='banner_input'
               value={selectTitle}
               handleChange={e => setSelectTitle(e.target.value)}
             />
-            <InputComp 
+            <InputComp
               type="text"
               placeholder="Enter tournament link"
               className='banner_input'
@@ -260,26 +261,26 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
               </Box>
             ) : (
               <>
-              {image ? (
-              <Box className='banner_image_preview_setion'>
-                <Img src={prevImage} className='preview_image' />
-                <Button className='close_prev_btn' onClick={handleCloseImage}>
-                  <MdClose />
-                </Button>
-              </Box>
-            ) : (
-              <Box className='banner_image_section'>
-                <label htmlFor='banner_image'>
-                  <FiUpload className='banner_file_icon' />
-                </label>
-                <Input
-                  type='file'
-                  id='banner_image'
-                  className='file_input'
-                  onChange={(e) => handleImageChange(e)}
-                />
-              </Box>
-            )}
+                {image ? (
+                  <Box className='banner_image_preview_setion'>
+                    <Img src={prevImage} className='preview_image' />
+                    <Button className='close_prev_btn' onClick={handleCloseImage}>
+                      <MdClose />
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box className='banner_image_section'>
+                    <label htmlFor='banner_image'>
+                      <FiUpload className='banner_file_icon' />
+                    </label>
+                    <Input
+                      type='file'
+                      id='banner_image'
+                      className='file_input'
+                      onChange={(e) => handleImageChange(e)}
+                    />
+                  </Box>
+                )}
               </>
             )}
           </Box>}
@@ -308,34 +309,34 @@ const TournamentsComp = ({ data, index, setUpdateTournament }) => {
           <Td className='td'>{date}</Td>
           <Td className='td'>{time}</Td>
           <Td className='td'>
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  className={
-                    status === "pending"
-                      ? `active_btn user`
-                      : status === "active"
+            <Menu>
+              <MenuButton
+                as={Button}
+                className={
+                  status === "pending"
+                    ? `active_btn user`
+                    : status === "active"
                       ? "active_btn active"
                       : "active_btn inactive"
+                }>
+                {status.toUpperCase()}
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  className='menu_item'
+                  onClick={() => handleChangeStatusModal("active", data._id)}>
+                  Active
+                </MenuItem>
+                <MenuItem
+                  className='menu_item'
+                  onClick={() =>
+                    handleChangeStatusModal("inactive", data._id)
                   }>
-                  {status.toUpperCase()}
-                </MenuButton>
-                <MenuList>
-                  <MenuItem
-                    className='menu_item'
-                    onClick={() => handleChangeStatusModal("active", data._id)}>
-                    Active
-                  </MenuItem>
-                  <MenuItem
-                    className='menu_item'
-                    onClick={() =>
-                      handleChangeStatusModal("inactive", data._id)
-                    }>
-                    Inactive
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Td>
+                  Inactive
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Td>
           <Td className='td'>
             <Button
               className='table_delete_btn'
