@@ -595,14 +595,25 @@ const TournamentPage = () => {
         footer={
           <Box className='create_banner_footer'>
             {
-              currentStep === 3 ? <ButtonComp
-                loading={loading}
-                disable={disable}
-                className='banner_create_btn'
-                disableClassName='disable_banner_create_btn'
-                text='Save'
-                handleClick={handleCreateTournament}
-              /> : <Button className="modal_btn" onClick={() => setCurrentStep(prev => prev + 1)}>Next</Button>
+              currentStep === 3 ? <>
+                {
+                  currentStep !== 1 ? <Button className="modal_btn prev_stepper_btn" onClick={() => setCurrentStep(prev => prev - 1)}>Previous</Button> : <Button className="modal_btn disable_prev_stepper_btn">Previous</Button>
+                }
+                <ButtonComp
+                  loading={loading}
+                  disable={disable}
+                  className='banner_create_btn'
+                  disableClassName='disable_banner_create_btn'
+                  text='Save'
+                  handleClick={handleCreateTournament}
+                />
+              </>
+                : <>
+                  {
+                    currentStep !== 1 ? <Button className="modal_btn prev_stepper_btn" onClick={() => setCurrentStep(prev => prev - 1)}>Previous</Button> : <Button className="modal_btn disable_prev_stepper_btn">Previous</Button>
+                  }
+                  <Button className="modal_btn" onClick={() => setCurrentStep(prev => prev + 1)}>Next</Button>
+                </>
             }
           </Box>
         }
