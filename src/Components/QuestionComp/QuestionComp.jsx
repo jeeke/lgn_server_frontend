@@ -38,7 +38,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   const [openStatusModal, setOpenstatusModal] = useState(false);
   const [questionId, setQuestionId] = useState("");
   const [updateValue, setupdateValue] = useState("");
-  const [correctOption, setcorrectOption] = useState(data.correctOption || "");
+  const [correctOption, setcorrectOption] = useState(data.correctOptions || []);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isDelete, setIsDelete] = useState(data.isDelete || false);
   const [validUntil, setvalidUntil] = useState(data.validUntil)
@@ -109,7 +109,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
 
   const handlechangeAnswerOption = (question, option) => {
     let data = JSON.stringify({
-      "optionId": option._id,
+      "optionIds": [option._id],
       "tournamentId": question.tourId
     });
     
@@ -128,7 +128,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
     .then((response) => {
       console.log(response.data);
       setUpdateQuestions(response.data.question)
-      setcorrectOption(response.data.question.correctOption);
+      setcorrectOption(response.data.question.correctOptions);
       toast({
         title: "Success.",
         description: `${response.data.message}`,
