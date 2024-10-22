@@ -7,7 +7,7 @@ import {
   Button,
   Switch,
   FormControl,
-  FormLabel,
+  FormLabel, Select,
 } from "@chakra-ui/react";
 import InputComp from "../../Components/InputComp/InputComp";
 import ButtonComp from "../../Components/ButtonComp/AuthButton";
@@ -21,6 +21,7 @@ const MAX_OPTIONS = 16;
 const QuestionForm = ({ id }) => {
   const toast = useToast();
   const [question, setQuestion] = useState("");
+  const [multipleCorrect, setMultipleCorrect] = useState("SINGLE");
   const [options, setOptions] = useState([{ text: "", image: "" }, { text: "", image: "" }]); // Starting with 2 options
   const [disable, setDisable] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -96,18 +97,18 @@ const QuestionForm = ({ id }) => {
       "isInfiniteTime": isInfiniteTime,
       "time": counter
     });
-    
+
     let config = {
       method: 'put',
       maxBodyLength: Infinity,
       url: `${process.env.REACT_APP_BASE_URL}api/v1/questions/update-time/${questionId}`,
-      headers: { 
-        'x-access-token': localStorage.getItem("token"), 
+      headers: {
+        'x-access-token': localStorage.getItem("token"),
         'Content-Type': 'application/json'
       },
       data : data
     };
-    
+
     axios.request(config)
     .then((response) => {
       console.log((response.data));
@@ -127,6 +128,7 @@ const QuestionForm = ({ id }) => {
     const formdata = new FormData();
     formdata.append("question", question);
     formdata.append("tourId", id);
+    formdata.append("type", multipleCorrect);
     options.forEach((opt, index) => {
       formdata.append(`options[${index}][text]`, opt.text);
       if (opt.image) {
@@ -207,6 +209,13 @@ const QuestionForm = ({ id }) => {
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
       />
+      <Box mt="20px" mb="20px">
+        <Select placeholder="Question Type" color="white" value={multipleCorrect}
+                onChange={(e) => setMultipleCorrect(e.target.value)}>
+          <option value="SINGLE">SINGLE CORRECT</option>
+          <option value="MULTIPLE">MULTIPLE CORRECT</option>
+        </Select>
+      </Box>
       {options.map((option, index) => (
         <Box key={index} className="option_box">
           <Box className="option_header">
@@ -239,9 +248,9 @@ const QuestionForm = ({ id }) => {
       ))}
       {options.length < MAX_OPTIONS && (
         <Box className="option_form_btn">
-          <Button 
-            onClick={handleAddOption} 
-            className="add_more_options_btn" 
+          <Button
+            onClick={handleAddOption}
+            className="add_more_options_btn"
             leftIcon={<FiPlus />}>
             Add Option
           </Button>

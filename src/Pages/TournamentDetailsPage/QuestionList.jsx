@@ -129,6 +129,7 @@ const QuestionList = ({ id }) => {
                 <Tr>
                   <Th className='table_header_item'>SL NO</Th>
                   <Th className='table_header_item'>Quesion</Th>
+                  <Th className='table_header_item'>Type</Th>
                   <Th className='table_header_item'>Options</Th>
                   <Th className='table_header_item'>Time Remaining</Th>
                   <Th className='table_header_item'>Status</Th>
@@ -138,7 +139,7 @@ const QuestionList = ({ id }) => {
               </Thead>
               {loading ? (
             <Tr className='empty_table_row'>
-              <Td className='empty_table_row' colSpan='7'>
+              <Td className='empty_table_row' colSpan='8'>
                 <Box className='empty_table_list'>
                   <Loader />
                 </Box>
@@ -155,7 +156,7 @@ const QuestionList = ({ id }) => {
                   ))}
                   {count === limit && (
                     <Tr className='empty_table_row'>
-                      <Td className='empty_table_row' colSpan='7'>
+                      <Td className='empty_table_row' colSpan='8'>
                         <Box className='loadmore_table_list'>
                           <Button
                             className='load_more_btn'

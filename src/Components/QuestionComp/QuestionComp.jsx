@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
   Box,
   Tr,
@@ -12,10 +12,10 @@ import {
   MenuList,
   MenuItem,
   Switch, FormControl, FormLabel,
-  useToast,
+  useToast, Checkbox,
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
-import { FaRegEdit } from "react-icons/fa";
+import {FaRegEdit, FaSave} from "react-icons/fa";
 import axios from "axios";
 import AlertModal from "../modalComp/AlertModal";
 import FullModal from "../modalComp/FullModal";
@@ -29,6 +29,7 @@ import { TfiInfinite } from "react-icons/tfi";
 import Pusher from 'pusher-js';
 import { FaAngleDown } from "react-icons/fa6";
 import { AiOutlineClose } from "react-icons/ai";
+import {arraysEqual} from "../../utils/helper";
 
 const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   // console.log(data)
@@ -49,7 +50,12 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
   const [confirmModal, setConfirmModal] = useState(false);
   const [openRemoveOptionModal, setOpenRemoveOptionModal] = useState(false);
   const [optionId, setOptionId] = useState("");
-  
+  const [selectedOptions, setSelectedOptions] = useState(data.correctOptions || []);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleOptionMenuToggle = () => {
+    data.status !== 'ResultsAnnounced' && setIsMenuOpen((prev) => !prev);
+  };
 
   const handleChangestatus = (id, value) => {
     // const containsIsInfinteTrue = questions.some(item => item.isInfinte === true);
@@ -106,10 +112,23 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
         console.log(error);
       });
   };
+  const handleSelectAnswerOption = (item) => {
+    if(item.status === "Inactive") return;
+    setSelectedOptions((prevSelected) => {
+      // Toggle selection
+      if (prevSelected.includes(item._id.toString())) {
+        return prevSelected.filter((id) => id !== item._id.toString());
+      } else {
+        return [...prevSelected, item._id.toString()];
+      }
+    });
+  };
 
-  const handlechangeAnswerOption = (question, option) => {
-    let data = JSON.stringify({
-      "optionIds": [option._id],
+  const handleUpdateAnswerOptions = () => {
+    const question = data;
+    setIsMenuOpen(false);
+    let body = JSON.stringify({
+      "optionIds": selectedOptions,
       "tournamentId": question.tourId
     });
     
@@ -121,7 +140,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
         'x-access-token': localStorage.getItem("token"),
         'Content-Type': 'application/json'
       },
-      data : data
+      data : body
     };
     
     axios.request(config)
@@ -468,6 +487,9 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
           {/* Tournament question */}
           <Td className='td'>{data.question}</Td>
 
+          {/* Tournament question type */}
+          <Td className='td'>{data.type}</Td>
+
           {/* Tournament options */}
           <Td className='td'>
             {
@@ -566,41 +588,77 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
 
           {/* Question correct option */}
           <Td className='td'>
-          <Menu>
-            <MenuButton as={Button} className="question_option_list" rightIcon={<FaAngleDown />}>
-              Select correct option
+          <Menu isOpen={isMenuOpen}>
+            <MenuButton as={Button} className="question_option_list" rightIcon={<FaAngleDown />} onClick={handleOptionMenuToggle}>
+              {
+                data.type === "SINGLE" && selectedOptions.length === 0 && "Select Correct Option"
+              }
+              {
+                  data.type === "MULTIPLE" && selectedOptions.length === 0 && "Select Correct Options"
+              }
+              {
+                  selectedOptions.length > 0 && (
+                      <span>
+                        {
+                          selectedOptions
+                              .map((optionId) => data.options.findIndex(option => option._id === optionId))
+                              .filter((index) => index !== -1)
+                              .sort((a, b) => a - b)
+                              .map(index => index + 1)
+                              .join(', ')
+                      }
+                      </span>
+                  )
+              }
             </MenuButton>
             <MenuList className="question_options_menu_list">
               {
                 data.options.map((item, index) => (
-                  <MenuItem
-                    className={item.status === "Inactive" ? 'question_menu_item line_through' : 'question_menu_item'}
-                    onClick={() => handlechangeAnswerOption(data, item)}>
-                      <Img src={item.image} className="question_option_image" />
-                      <span className={data.correctOption === item._id.toString() ? "question_option_text selected_question_option_text" : "question_option_text"}>
-                        {item.text}
+                    <MenuItem
+                        className={item.status === "Inactive" ? 'question_menu_item line_through' : 'question_menu_item'}
+                        onClick={(e) => {
+                          handleSelectAnswerOption(item);
+                        }}
+                    >
+                      <Checkbox
+                          isChecked={selectedOptions.includes(item._id.toString())}
+                          onChange={() => handleSelectAnswerOption(item)}
+                          size="lg"
+                          ml={2}
+                          mr={2}
+                      />
+                      <Img src={item.image} className="question_option_image"/>
+                      <span
+                          className={selectedOptions.includes(item._id.toString()) ? "question_option_text selected_question_option_text" : "question_option_text"}>
+                          {item.text}
                       </span>
-                  </MenuItem>
+                    </MenuItem>
                 ))
               }
             </MenuList>
           </Menu>
+            {
+              selectedOptions.length > 0 && !arraysEqual(data.correctOptions, selectedOptions) &&
+                <Button leftIcon={<FaSave />} onClick={handleUpdateAnswerOptions} ml={2}>
+                  Save
+                </Button>
+            }
           </Td>
 
           {/* Question Action button */}
           <Td className='td'>
             {
-              status === "Initialised"  && <Button
+            status === "Initialised"  && <Button
               className='table_delete_btn'
               onClick={() => handleOpenDeleteModal(data._id)}>
               <AiOutlineDelete />
             </Button>
             }
-            {
-              status === "Initialised" && <Button className='table_edit_btn'>
-              <FaRegEdit />
-            </Button>
-            }
+            {/*{*/}
+            {/*  status === "Initialised" && <Button className='table_edit_btn'>*/}
+            {/*  <FaRegEdit />*/}
+            {/*</Button>*/}
+            {/*}*/}
             
           </Td>
         </Tr>
