@@ -506,7 +506,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
                         >
                         <Box className="question_info_box">
                           <Img src={item.image} className="question_option_image" />
-                          <span className={data.correctOption === item._id.toString() ? "question_option_text selected_question_option_text" : "question_option_text"}>
+                          <span className={data.correctOptions.includes(item._id?.toString()) ? "question_option_text selected_question_option_text" : "question_option_text"}>
                             {item.text}
                           </span>
                         </Box>
@@ -621,7 +621,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
                         }}
                     >
                       <Checkbox
-                          isChecked={selectedOptions.includes(item._id.toString())}
+                          isChecked={selectedOptions.includes(item._id?.toString())}
                           onChange={() => handleSelectAnswerOption(item)}
                           size="lg"
                           ml={2}
@@ -629,7 +629,7 @@ const QuestionComp = ({ data, index, setUpdateQuestions, questions }) => {
                       />
                       <Img src={item.image} className="question_option_image"/>
                       <span
-                          className={selectedOptions.includes(item._id.toString()) ? "question_option_text selected_question_option_text" : "question_option_text"}>
+                          className={selectedOptions.includes(item._id?.toString()) ? "question_option_text selected_question_option_text" : "question_option_text"}>
                           {item.text}
                       </span>
                     </MenuItem>
