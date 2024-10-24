@@ -177,9 +177,7 @@ const TournamentPage = () => {
     formdata.append("userId", userId);
     formdata.append("token", "");
     formdata.append("created_by", "admin");
-    formdata.append("options", forms);
     forms.forEach((opt, index) => {
-      console.log(opt);
       formdata.append(`options[${index}][name]`, opt.name);
       if (opt.image) {
         formdata.append(`options[${index}][image]`, opt.image);
@@ -330,16 +328,9 @@ const TournamentPage = () => {
   };
 
   const handleGiftImageChange = (index, e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const newForms = [...forms];
-      newForms[index].image = reader.result;
-      setForms(newForms);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
+    const newForms = [...forms];
+    newForms[index].image = e.target.files[0];
+    setForms(newForms);
   };
 
   const handleRemoveForm = (index) => {
